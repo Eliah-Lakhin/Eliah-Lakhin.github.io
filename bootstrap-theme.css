@@ -1,5 +1,5 @@
 @import url(http://fonts.googleapis.com/css?family=Dancing+Script:700);
-@import url(http://fonts.googleapis.com/css?family=Lato:400,700);
+@import url(http://fonts.googleapis.com/css?family=Maven+Pro);
 body {
   padding-top: 130px;
   background: url('/asset/file000624709884.jpg') no-repeat center center fixed;
@@ -47,10 +47,33 @@ body {
   font-family: "Dancing Script", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 28px;
 }
+.navbar-custom .navbar-brand .navbar-brand-main {
+  position: relative;
+  display: block;
+  font-size: 32px;
+  top: -10px;
+}
+.navbar-custom .navbar-brand .navbar-brand-sub {
+  position: absolute;
+  display: block;
+  color: #999999;
+  font-family: 'Maven Pro', "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 13px;
+}
+.main-container {
+  margin-bottom: 50px;
+}
 .main-container,
+.main-container h1,
+.main-container h2,
+.main-container h3,
+.main-container h4,
+.main-container h5,
+.main-container h6 {
+  font-family: 'Maven Pro', "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
 .main-container .light-theme {
   background-color: #fffbef;
-  font-family: Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #333333;
 }
 .main-container .dark-theme {
@@ -63,6 +86,7 @@ body {
 .main-container pre {
   border-radius: 0;
   border-width: 0 0 0 3px;
+  font-size: 13px;
 }
 .main-container pre code a,
 .main-container pre code a:hover,
@@ -70,6 +94,137 @@ body {
   color: #ffffff;
   text-decoration: none;
   border-bottom: 1px dotted #404040;
+}
+.main-container code.lang-scala span {
+  font-weight: normal;
+}
+.main-container code.lang-scala .keyword {
+  color: #d97a08;
+  font-weight: bold;
+}
+.main-container code.lang-scala .number,
+.main-container code.lang-scala .string {
+  color: #5cb85c;
+}
+.main-container code.lang-scala .comment,
+.main-container code.lang-scala .javadoc,
+.main-container code.lang-scala .javadoctag {
+  color: #555555;
+}
+.main-container code.lang-java span {
+  font-weight: normal;
+}
+.main-container code.lang-java .keyword {
+  color: #d97a08;
+  font-weight: bold;
+}
+.main-container code.lang-java .number,
+.main-container code.lang-java .string {
+  color: #5cb85c;
+}
+.main-container code.lang-java .comment,
+.main-container code.lang-java .javadoc {
+  color: #555555;
+}
+.main-container #main-nav .nav.nav-top {
+  margin: 15px 20px;
+}
+.main-container #main-nav .nav {
+  margin: 0 0 0 25px;
+  list-style: circle;
+}
+.main-container #main-nav .nav > li > span,
+.main-container #main-nav .nav > li a {
+  color: #eeeeee;
+  padding: 5px 0px;
+}
+.main-container #main-nav .nav > li > a {
+  border: 0;
+  text-decoration: none;
+}
+.main-container #main-nav .nav > li > a span {
+  border-bottom: 1px dotted #555555;
+}
+.main-container #main-nav .nav > li > a.external > span {
+  border-bottom-style: solid;
+}
+.main-container #main-nav .nav > li > a:hover,
+.main-container #main-nav .nav > li > a:focus {
+  background-color: transparent;
+}
+.main-container #main-nav .nav > li > a:hover span,
+.main-container #main-nav .nav > li > a:focus span {
+  border-bottom-color: #f7941d;
+}
+.main-container #main-nav .nav > li.active > a,
+.main-container #main-nav .nav > li.active > a:hover,
+.main-container #main-nav .nav > li.active > a:focus {
+  color: #f7941d;
+  background-color: inherit;
+}
+.main-container #main-nav .nav > li.active > a span,
+.main-container #main-nav .nav > li.active > a:hover span,
+.main-container #main-nav .nav > li.active > a:focus span {
+  border: none;
+}
+.main-container article {
+  margin-bottom: 100px;
+  padding: 0 10%;
+}
+.main-container article h1.section-header {
+  display: block;
+  text-align: center;
+  margin: -130px 0 40px 0;
+  padding-top: 170px;
+}
+.main-container article h1.section-header .decoration-line {
+  position: relative;
+  height: 1px;
+  background: #877d75;
+  margin-left: 12.5%;
+  margin-right: 12.5%;
+  top: 22.5px;
+}
+.main-container article h1.section-header .caption {
+  position: relative;
+  display: inline-block;
+  background: #fffbef;
+  padding-left: 2.5%;
+  padding-right: 2.5%;
+  text-transform: uppercase;
+}
+.main-container article h2,
+.main-container article h3,
+.main-container article h4,
+.main-container article h5,
+.main-container article h6 {
+  text-align: center;
+}
+.main-container article table {
+  background: #433e3a;
+  width: 100%;
+  color: #eeeeee;
+  margin: 20px 0;
+}
+.main-container article table td,
+.main-container article table th {
+  padding: 8px;
+}
+.main-container article table tr {
+  border: 1px solid #333333;
+}
+.main-container article table thead tr {
+  background: #fff;
+  color: #222222;
+}
+.main-container article table thead tr th {
+  text-align: center;
+}
+.main-container article table tbody tr:nth-child(odd) {
+  background: #514b46;
+}
+.main-container article p {
+  margin: 20px 10px;
 }
 #personal {
   position: relative;

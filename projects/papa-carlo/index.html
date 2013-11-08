@@ -1,0 +1,669 @@
+<!DOCTYPE html><html lang="en"><head><title>Papa Carlo</title><link rel="shortcut icon" href="/favicon.ico"><meta name="viewport" content="width=device-width, initial-scale=1.0"><!-- jQuery--><script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script><!-- Bootstrap--><link rel="stylesheet" href="/bootstrap.css"><link rel="stylesheet" href="/bootstrap-theme.css"><script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0-rc2/js/bootstrap.min.js"></script><script type="text/javascript" src="/js/clamped-width.js"></script><script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-45542062-1', 'lakhin.com');
+  ga('send', 'pageview');
+
+</script></head><body data-spy="scroll" data-target="#main-nav"><header role="navigation" class="navbar navbar-default navbar-custom navbar-fixed-top navbar-inverse"><div class="container"><div class="navbar-header"><button type="button" data-toggle="collapse" data-target="#main-menu-body" class="navbar-toggle"><span class="sr-only">menu.toggle</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="/projects/papa-carlo" title="Home" class="navbar-brand"><span class="navbar-brand-main">Papa Carlo</span><span class="navbar-brand-sub">constructor of incremental parsers in Scala</span></a></div><div id="main-menu-body" class="collapse navbar-collapse"><ul class="nav navbar-nav navbar-right"><li><div class="triangle"></div><a href="/">Home</a></li><li><div class="triangle"></div><a href="/blog">Blog</a></li><li class="active"><div class="triangle"></div><a href="/projects">Projects</a></li><li><div class="triangle"></div><a href="https://github.com/Eliah-Lakhin/">GitHub</a></li></ul></div></div></header><div class="container main-container"><div class="row"><div role="complementary" class="col-md-3"><div id="main-nav" data-spy="affix" data-clampedwidth="[role=&quot;complementary&quot;]" class="dark-theme"><div class="ul nav nav-pills nav-stacked nav-top"><li><a href="https://github.com/Eliah-Lakhin/papa-carlo/" target="_blank" class="external"><span>Source codes on GitHub</span></a></li><li><a href="#introduction"><span>Introduction</span></a></li><li><span>Tutorial</span><ul class="nav"><li><a href="#parser-structure"><span>Parser structure</span></a></li><li><a href="#parsing-stages"><span>Parsing stages</span></a></li><li><a href="#lexis"><span>Lexis</span></a></li><li><a href="#fragments-definition"><span>Fragments definition</span></a></li><li><a href="#abstract-syntax-tree"><span>Abstract Syntax Tree</span></a></li><li><a href="#syntax-definition-api"><span>Syntax definition API</span></a></li><li><a href="#error-recovering"><span>Error recovering</span></a></li><li><a href="#caching"><span>Caching</span></a></li><li><a href="#expressions"><span>Expressions</span></a></li><li><a href="#manual-ast-manipulation"><span>Manual AST manipulation</span></a></li><li><a href="#debugging"><span>Debugging</span></a></li></ul></li></div></div></div><div role="main" class="col-md-9 light-theme"><article><h1 id="introduction" class="section-header"><div class="decoration-line"></div><span class="caption">Introduction</span></h1><p>Development of programming language code editors and IDEs is a quite complicated problem. Modern IDEs like Eclipse, Visual Studio and IntelliJ IDEA provide end-user with a number of handy code manipulation features: code completion, refactoring, jump-to-definition and even semantic analysis.</p>
+<p>The heart of these systems are specific code parsers that are different from the ordinary parsers designed for programming language compilers. Such parsers should be able to:</p>
+<ol>
+<li>Build internal object-based representation(AST) of the source code that may contain syntax errors.</li>
+<li>Keep this representation in touch with source code while the user makes changes to it. And the parser should do it quickly regardless the size of the source code.</li>
+</ol>
+<p>Unfortunately there is a lack of tools to build parsers of this type. Most of the existing parser generators like YACC, ANTLR and combinators like Scala Parser Combinator don&#39;t provide features described above. Because resulting parsers are designed to parse the whole files at once. This approach is well suitable for ordinary compilers, but not for code editors. And usually developers of language support plugins for IDEs need to develop them more or less manually.</p>
+<p>Papa Carlo has been made to resolve this problem. Another goal of the library is providing easy to use toolkit with a number of handy features out of the box that language parser developers usually need.</p>
+<p>Here is how Papa Carlo accomplishes it:</p>
+<ul>
+<li>User defines programming language specifications using Papa Carlo&#39;s API directly in the Scala code.
+This approach is close to one that is using in many modern parser combinators.<ul>
+<li>Language specification is based on <a href="http://en.wikipedia.org/wiki/Parsing_expression_grammar">Parsing Expression Grammar</a>.</li>
+<li>Expressions with infix/prefix/postfix operators can also be defined with shortcut prepared primitive rules. To be performed with <a href="http://en.wikipedia.org/wiki/Pratt_parser">Pratt parsing algorithm</a>.</li>
+</ul>
+</li>
+<li>Resulting parser can build <a href="http://en.wikipedia.org/wiki/Abstract_syntax_tree">Abstract Syntax Tree</a> out of the box. No rule actions needed.</li>
+<li>Parser can efficiently recover syntax errors and build parsing result from incomplete code.</li>
+<li>And the most important is that Papa Carlo caches parsing results by small source code fragments. So it can parse files incrementally while user edits it without significant performance penalties.</li>
+</ul>
+<p>It is also important to mention when Papa Carlo does not fit well. If you are interested in development of standalone programming language compilers that should be able to parse large amount of files with thousands of source code lines at once, and the speed is vital, probably you should look for something different. For example at a parser generator like ANTLR. Due to Papa Carlo&#39;s built-in feature nature like caching and error recovering, it&#39;s performance may be not as good on startup as of parsers generated with ANTLR.</p>
+</article><article><h1 id="parser-structure" class="section-header"><div class="decoration-line"></div><span class="caption">Parser structure</span></h1><p>Let&#39;s have a look at example of <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/examples/Json.scala">JSON parser</a>. Usually parser consists of three main components:</p>
+<ul>
+<li>Language lexis specification.</li>
+<li>Language syntax specification.</li>
+<li>Fragments specifications. This is about caching and will be described later in more details.</li>
+</ul>
+<p>Normally the Parser can be define in one Scala file. And have structure like this:</p>
+<pre><code class="lang-scala"><span class="class"><span class="keyword">object</span> <span class="title">Json</span> {</span>
+  <span class="keyword">private</span> <span class="keyword">def</span> tokenizer = {
+    <span class="keyword">val</span> tokenizer = <span class="keyword">new</span> Tokenizer()
+
+    <span class="keyword">import</span> tokenizer._
+    <span class="keyword">import</span> Matcher._
+
+    ... <span class="comment">// lexis specification here</span>
+
+    tokenizer
+  }
+
+  <span class="keyword">private</span> <span class="keyword">def</span> contextualizer = {
+    <span class="keyword">val</span> contextualizer = <span class="keyword">new</span> Contextualizer
+
+    <span class="keyword">import</span> contextualizer._
+
+    ... <span class="comment">// fragment specification here</span>
+
+    contextualizer
+  }
+
+  <span class="keyword">def</span> lexer = <span class="keyword">new</span> Lexer(tokenizer, contextualizer)
+
+  <span class="keyword">def</span> syntax(lexer: Lexer) = <span class="keyword">new</span> {
+    <span class="keyword">val</span> syntax = <span class="keyword">new</span> Syntax(lexer)
+
+    <span class="keyword">import</span> syntax._
+    <span class="keyword">import</span> Rule._
+
+    ... <span class="comment">// syntax rule specification here</span>
+
+  }.syntax
+}
+...
+<span class="comment">// Example of usage:</span>
+
+<span class="keyword">val</span> lexer = Json.lexer()
+<span class="keyword">val</span> syntax = Json.syntax(lexer)
+syntax.onNodeMerge.bind {node =&gt; println(node.prettyPrint())} <span class="comment">// prints top AST node</span>
+lexer.input(<span class="string">""</span><span class="string">" {"</span>x<span class="string">": ["</span>hello world<span class="string">", 1234], "</span>y<span class="string">": 5678} "</span><span class="string">""</span>) <span class="comment">// input source code in JSON</span></code></pre>
+<p>This is in fact all that we need to obtain full-feature incremental parser. As easy as pie.</p>
+</article><article><h1 id="parsing-stages" class="section-header"><div class="decoration-line"></div><span class="caption">Parsing stages</span></h1><p>You don&#39;t really need to know how the Parser works in a nutshell to build one. But knowledge of it&#39;s internal processes may improve understanding of Papa Carlo&#39;s top level API.</p>
+<p>When the text data comes into Lexer it is passing through several transformation stages. Finally becomes an object-based hierarchical structure, so called &quot;<a href="http://en.wikipedia.org/wiki/Abstract_syntax_tree">Abstract Syntax Tree</a>&quot;. Each component responsible for performing specific stage softly connected with components of the previous stages. And the connections between components are based on <a href="http://en.wikipedia.org/wiki/Signal_programming">slot-signal model</a>. So each component has it&#39;s own public signal fields that could be subscribed by appropriate anonymous functions. This technique is also could be a useful thing to debug individual stages of your own parser during the development. And particularly Papa Carlo&#39;s own functional tests use these signals to build parser&#39;s log for each test case.</p>
+<p>Source code data can be(and practically should be) entered to the parser continuously while the end user doing changes in the source code. So each component of the Parser can use results got from the previous entering phase in order to optimise process of the parsing the next phase. This is so called &quot;incremental parsing&quot;, the essential feature of Papa Carlo.</p>
+<p>So here are the stages and components responsible for handling these stages:</p>
+<ol>
+<li>Selecting part of the code that different from the source code parsed before - <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/Lexer.scala">Lexer</a>.</li>
+<li>Splitting this part into lines - Lexer.</li>
+<li>Splitting each line into tokens - <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/lexis/Tokenizer.scala">Tokenizer</a>.</li>
+<li>Replacing part of the exist tokens from the previous phase with new tokens - <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/lexis/TokenCollection.scala">TokenCollection</a>.</li>
+<li>Splitting tokens into contextual fragments - <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/lexis/FragmentController.scala">FragmentController</a> and <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/lexis/Contextualizer.scala">Contextualizer</a>.</li>
+<li>Parsing fragments using syntax rules - <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/Syntax.scala">Syntax</a>.</li>
+<li>Building Abstract Syntax Tree based on <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/syntax/Node.scala">Node</a>s for these fragments and replace appropriate branches of the exist Tree with updated branches - Syntax.</li>
+</ol>
+<p>Sounds quite complicated. But fortunately most of the time developer don&#39;t need to work with all this stuff himself, because Papa Carlo takes the hard work on his side. All that developer needs is specifying parsing rules for Tokenizer, Contextualizer and Syntax using prepared and easy to use API.</p>
+<p>Now it&#39;s time to describe this API.</p>
+</article><article><h1 id="lexis" class="section-header"><div class="decoration-line"></div><span class="caption">Lexis</span></h1><p>On the first parsing stage source code should be splitted into small pieces(token&#39;s &quot;value&quot;). And classified by groups(token&#39;s &quot;kind&quot;). For example this code <code>{&quot;x&quot;: 1234}</code> will be parsed to the following sequence of tokens:</p>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th align="left">Value</th>
+<th align="center">Skip</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Open brace</td>
+<td align="left"><code>{</code></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>String</td>
+<td align="left"><code>&quot;x&quot;</code></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>Colon</td>
+<td align="left"><code>:</code></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>Whitespace</td>
+<td align="left"><code> </code></td>
+<td align="center">+</td>
+</tr>
+<tr>
+<td>Number</td>
+<td align="left"><code>1234</code></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td>Close brace</td>
+<td align="left"><code>}</code></td>
+</tr>
+</tbody>
+</table>
+<p>Further syntax parsing rules will be applied to these token kinds, not their values. And the tokens flagged as &quot;skippable&quot; will be ignored by syntax parser.</p>
+<p>As a first step we need to define Token Category parsing rules that should match character sequences and produce tokens of appropriate kinds. Such rules are representing as <a href="http://en.wikipedia.org/wiki/Finite-state_machine">Finite-State Machines</a> in a nutshell. So they also can be seen as regular expressions, but defined with combination of functions. Here is an example of tokenizer for <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/examples/Calculator.scala">Math expressions parser</a>:</p>
+<pre><code class="lang-scala">...
+  <span class="keyword">private</span> <span class="keyword">def</span> tokenizer = {
+    <span class="keyword">val</span> tokenizer = <span class="keyword">new</span> Tokenizer()
+
+    <span class="keyword">import</span> tokenizer._
+    <span class="keyword">import</span> Matcher._
+
+    tokenCategory(
+      <span class="string">"whitespace"</span>,
+      oneOrMore(anyOf(<span class="string">" \t\f\n"</span>)) <span class="comment">// in terms of regexp: [:space:]+</span>
+    ).skip
+
+    tokenCategory(
+      <span class="string">"number"</span>,
+      choice(  <span class="comment">// in terms of regexp: 0|([1-9][0-9]*)</span>
+        chunk(<span class="string">"0"</span>),
+        sequence(rangeOf(<span class="string">'1'</span>, <span class="string">'9'</span>), zeroOrMore(rangeOf(<span class="string">'0'</span>, <span class="string">'9'</span>)))
+      )
+    )
+
+    terminals(<span class="string">"("</span>, <span class="string">")"</span>, <span class="string">"%"</span>, <span class="string">"+"</span>, <span class="string">"-"</span>, <span class="string">"*"</span>, <span class="string">"/"</span>)
+
+    tokenizer
+  }
+...</code></pre>
+<p>Two token categories are defined here: &quot;whitespace&quot; for spaces between valuable tokens, and &quot;number&quot; for valuable tokens. Whitespace token category here marked as skippable with <code>.skip()</code> method.</p>
+<p>For one who are familiar with Regular Expressions here is a table of translations between Papa Carlo&#39;s <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/lexis/Matcher.scala">Matchers</a> and regexp rules:</p>
+<table>
+<thead>
+<tr>
+<th>Papa Carlo Matcher</th>
+<th align="center">Similar Regexp</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>zeroOrMore(x)</td>
+<td align="center">x*</td>
+<td>Repetition of x.</td>
+</tr>
+<tr>
+<td>oneOrMore(x)</td>
+<td align="center">x+</td>
+<td>Repetition of x at least one time.</td>
+</tr>
+<tr>
+<td>optional(x)</td>
+<td align="center">x?</td>
+<td>Repetition of x one time max.</td>
+</tr>
+<tr>
+<td>repeat(x, y)</td>
+<td align="center">x{y, y}</td>
+<td>Repetition of x exactly y times.</td>
+</tr>
+<tr>
+<td>anyOf(&quot;xyz&quot;)</td>
+<td align="center">[xyz]</td>
+<td>Any character from the given string.</td>
+</tr>
+<tr>
+<td>anyExceptOf(&quot;xyz&quot;)</td>
+<td align="center">[^xyz]</td>
+<td>Any character but one from the given string.</td>
+</tr>
+<tr>
+<td>any()</td>
+<td align="center">.</td>
+<td>Any character</td>
+</tr>
+<tr>
+<td>rangeOf(x, y)</td>
+<td align="center">[x-y]</td>
+<td>Any character between characters x and y.</td>
+</tr>
+<tr>
+<td>chunk(&quot;foobar&quot;)</td>
+<td align="center">foobar</td>
+<td>Match given string.</td>
+</tr>
+<tr>
+<td>test(x)</td>
+<td align="center"></td>
+<td>Predicate. Checks whether the matcher x applied here, but doesn&#39;t perform actual application.</td>
+</tr>
+<tr>
+<td>testNot(x)</td>
+<td align="center"></td>
+<td>Predicate. Checks whether the matcher x <strong>is not</strong> applied here.</td>
+</tr>
+<tr>
+<td>sequence(x, y, z)</td>
+<td align="center">x y z</td>
+<td>Sequence of rules</td>
+</tr>
+<tr>
+<td>choice(x, y, z)</td>
+<td align="center">x&#124;y&#124;z</td>
+<td>Ordered choice between rules. In contrast with Regular expressions further rules can be applied if and only if preceded have been failed.</td>
+</tr>
+</tbody>
+</table>
+<p>Except generic token categories described above, it is also important to have a way to define static categories. Whose names and values are equal. There are two kind of such categories: terminals and keywords.</p>
+<p>Terminals can be defined like this: <code>tokenizer.terminals(&quot;{&quot;, &quot;}&quot;, &quot;+&quot;)</code>. Terminals are similar to appropriate generic token categories:</p>
+<pre><code class="lang-scala">tokenizer.tokenCategory(<span class="string">"{"</span>, chunk(<span class="string">"{"</span>))
+tokenizer.tokenCategory(<span class="string">"}"</span>, chunk(<span class="string">"}"</span>))
+tokenizer.tokenCategory(<span class="string">"+"</span>, chunk(<span class="string">"+"</span>))</code></pre>
+<p>Keyword definition API is similar to terminals: <code>tokenizer.keywords(&quot;def&quot;, &quot;class&quot;, &quot;private&quot;)</code>. But they work in a different way. Each keyword rule is trying to turn <em>kind</em> of token produced with <em>tokenCategory</em> rule when token&#39;s value matches keyword&#39;s name. Let&#39;s look at example from <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/examples/Json.scala">JSON parser</a>:</p>
+<pre><code class="lang-scala">...
+    tokenCategory(
+      <span class="string">"alphanum"</span>,
+      oneOrMore(rangeOf(<span class="string">'a'</span>, <span class="string">'z'</span>))
+    )
+...
+    keywords(<span class="string">"true"</span>, <span class="string">"false"</span>, <span class="string">"null"</span>)
+...</code></pre>
+<p>Here string like <code>abc=true cde=null</code> will be parsed as <code>[&quot;alphanum&quot;, &quot;=&quot;, &quot;true&quot;, &quot;whitespace&quot;, &quot;alphanum&quot;, &quot;=&quot;, &quot;null&quot;]</code>. Whereas the string <code>abc=truecde=null</code> parsed as <code>[&quot;alphanum&quot;, &quot;=&quot;, &quot;alphanum&quot;, &quot;=&quot;, &quot;null&quot;]</code>. Here string <code>truecde</code> contains substring <code>true</code>, but doesn&#39;t match it. So it cannot be turned to independent keyword token.</p>
+<p>Another thing that should be mentioned about tokenization process is importance of order of token category definition. The token category rules are applied in the order of their definition. So it is important to be careful with rules of tokens that could be substrings of another tokens.</p>
+<p>For example terminal rules like <code>tokenizer.terminals(&quot;+&quot;, &quot;++&quot;)</code> will parse text <code>++ + ++</code> as <code>[&quot;+&quot;, &quot;+&quot;, &quot;+&quot;, &quot;+&quot;, &quot;+&quot;]</code>. And the <code>++</code> substring here will be described as two independent tokens. In order to fix it terminal&#39;s definition order should be changed to <code>tokenizer.terminals(&quot;++&quot;, &quot;+&quot;)</code>. Now the input string will be parsed as expected: <code>[&quot;++&quot;, &quot;+&quot;, &quot;++&quot;]</code>.</p>
+</article><article><h1 id="fragments-definition" class="section-header"><div class="decoration-line"></div><span class="caption">Fragments definition</span></h1><p>Before the syntax parsing stage parser selects simple syntactical <em>Fragments</em> between the pair of specific tokens. And uses these fragments to perform parsing results caching during the syntax parsing stage. Such fragments can be for example a code blocks between &quot;{&quot; and &quot;}&quot; tokens in C++, or maybe a function definition between keywords &quot;def&quot; and &quot;end&quot; in Ruby. Most of the programming languages usually have such pairs. The main property of the Fragment is that it&#39;s meaning(or to be more specific a syntax rule that can be applied to it) in context of language&#39;s syntax should be invariant to it&#39;s content.</p>
+<p>Let&#39;s illustrate it in example. Here is a Java snippet:</p>
+<pre><code class="lang-java"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FibCalculator</span> </span>{
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> fibonacci(<span class="keyword">int</span> fibIndex) {
+        <span class="keyword">if</span> (memoized.containsKey(fibIndex)) {
+            <span class="keyword">return</span> memoized.get(fibIndex);
+        } <span class="keyword">else</span> {
+            <span class="keyword">int</span> answer = fibonacci(fibIndex - <span class="number">1</span>) + fibonacci(fibIndex - <span class="number">2</span>);
+            memoized.put(fibIndex, answer);
+            <span class="keyword">return</span> answer;
+        }
+    }
+}</code></pre>
+<p>There are four code fragments between curly braces &quot;{&quot;, &quot;}&quot;: class body, method body, success branch of conditional operator, failed branch of that operator. And each of these fragments will remain it&#39;s type regardless of it&#39;s internal content. Method body will remain as a method body even if programmer adds another one code statement, or even writes something syntactically incorrect in it. Of course meaning of the nested fragments may potentially change depending on changes made in to the parent fragment. But it doesn&#39;t make sense.</p>
+<p>To summarise Papa Carlo needs developer to define Fragments of code with the following properties:</p>
+<ol>
+<li>They could be simply determined as a code sequence between two tokens.</li>
+<li>Their syntactical meaning invariant to internal content. At least in most cases.</li>
+<li>Normally it is expected that code contains a lot of such fragments.</li>
+</ol>
+<p>Fortunately most of the modern programming languages meet these requirements.</p>
+<p>Defining fragments is extremely simple. That is how it is done in the <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/examples/Json.scala">JSON parser example</a>:</p>
+<pre><code class="lang-scala">  <span class="keyword">private</span> <span class="keyword">def</span> contextualizer = {
+    <span class="keyword">val</span> contextualizer = <span class="keyword">new</span> Contextualizer
+
+    <span class="keyword">import</span> contextualizer._
+
+    trackContext(<span class="string">"["</span>, <span class="string">"]"</span>).allowCaching
+    trackContext(<span class="string">"{"</span>, <span class="string">"}"</span>).allowCaching
+
+    contextualizer
+  }</code></pre>
+<p>Calling of <code>.allowCaching()</code> method here indicates that fragments of this kind may be potentially bound to cached parts of the resulting Abstract Syntax Tree. Caching process described in more details in the next topic.</p>
+<p>Another useful point about fragments is changing tokens flags. For example it is possible to define that specific fragment should be completely ignored during syntax parsing. It might be useful to define code comments:</p>
+<pre><code class="lang-scala">trackContext(<span class="string">"/*"</span>, <span class="string">"*/"</span>).forceSkip.topContext
+trackContext(<span class="string">"&amp;quot;"</span>, <span class="string">"&amp;quot;"</span>).topContext</code></pre>
+<p>Here is a definition of two fragment types. First for code comments <code>/* comments to be ignored */</code>. And the second for string literals(potentially multiline strings). Method <code>.forseSkip()</code> indicates that all tokens in it should be ignored. And the <code>.topContext()</code> method indicates that there could not be fragments nested in it. For example first closed curly brace token in the string of <code>{ x = &quot;abc } def&quot;; }</code> should not be considered as an ending token of this curly-brace fragment.</p>
+<p>Similar to other parsing stages that utilising caching approach, fragmentation stage is not an exception. So the computational efforts that parser requires to update fragment system are proportional to the changes in the source code made by end-user. And in practice building fragments is a quite fast process. Moreover the parser is able to determine invalid fragments(with missing opened or closed tokens) and keep valid in touch. For example in this modified Java snippet:</p>
+<pre><code class="lang-java"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FibCalculator</span> </span>{
+    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> fibonacci(<span class="keyword">int</span> fibIndex) {
+        <span class="keyword">if</span> (memoized.containsKey(fibIndex)) {
+            <span class="keyword">return</span> memoized.get(fibIndex);
+        } <span class="keyword">else</span> {
+            <span class="keyword">int</span> answer = fibonacci(fibIndex - <span class="number">1</span>) + fibonacci(fibIndex - <span class="number">2</span>);
+            memoized.put(fibIndex, answer);
+            <span class="keyword">return</span> answer;
+damaged line
+    }
+}</code></pre>
+<p>parser will be able to still track fragments of class&#39;s body, method&#39;s body and even conditional operator&#39;s success-branch code block.</p>
+</article><article><h1 id="abstract-syntax-tree" class="section-header"><div class="decoration-line"></div><span class="caption">Abstract Syntax Tree</span></h1><p>The final result of parsing process is building hierarchical object representation of the source code, or <a href="http://en.wikipedia.org/wiki/Abstract_syntax_tree">Abstract Syntax Tree</a>. Each <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/syntax/Node.scala">Node class</a> of the AST has the following main properties:</p>
+<ul>
+<li><strong>kind</strong>: String name of the node&#39;s category. Usually the same as the name of the rule that builds this node.</li>
+<li><strong>begin</strong> and <strong>end</strong>: First and last tokens of the source code segment represented by the node.</li>
+<li><strong>id</strong>: Global unique identifier of the node. Each node of AST may be obtained using this identifier.</li>
+<li><strong>branches</strong>: Multimap of child nodes. So each branch of the node has it&#39;s own string tag. Usually each branch has unique tag. But sometimes one tag may refer to several branches. For example a node representing JSON Array may have a sequence of child nodes that representing array&#39;s elements. And all of these child nodes refer by &quot;element&quot; tag. Branches may be read from the current node with <code>getBranches(tag: String)</code> method.</li>
+<li><strong>references</strong>: Multimap of selected tokens from the source code of the node. Sometimes it may be useful to select specific tokens from the source in order to simplify the further process of AST semantic analysis. This multimap is forming similarly to the <em>branches</em> multimap. And the tokens can be read with <code>getValue(tag: String)</code> method. Result of this method is string of all tagged token values joined together.</li>
+</ul>
+<p>Syntax parser is responsible for creating, removing and building the whole AST. And usually developer doesn&#39;t need to care about manual operations with nodes. However Papa Carlo provides a way to override default node construction behaviour. This technique will be described in the next chapter.</p>
+</article><article><h1 id="syntax-definition-api" class="section-header"><div class="decoration-line"></div><span class="caption">Syntax definition API</span></h1><h3>API</h3>
+<p>To define actual syntax parser developer needs to decompose programming language syntax by named rules. Each of the rule is parsing specific code construction. And responsible for building appropriate AST Node for this code construction. These rules form programming language grammar of <a href="http://en.wikipedia.org/wiki/Parsing_expression_grammar">Parsing Expression Grammar</a> class.</p>
+<p>Rules are defined using methods of instance of the <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/Syntax.scala">Syntax</a> class: <code>.rule(ruleName: String)(ruleBody: =&gt; Rule)</code>. These rules constructing nodes of the same <em>kind</em> as the <em>ruleName</em>. Rule that represents top-level node of AST hierarchy should be defined with <code>mainRule</code> method instead.</p>
+<p>The reference returned from the rule definition method can be used to refer to this rule in other rules. Hence the rules can refer to each other forming a graph of rules. Note that rule bodies defined in lazy fashion. So it is safe to define circular references between them. In <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/examples/Json.scala">Json</a> example <em>jsonObject</em> refers to <em>objectEntry</em>, <em>objectEntry</em> refers to <em>jsonValue</em>. And the <em>jsonValue</em> refers to <em>jsonObject</em> again.</p>
+<p>Remember that all syntax rules are applied only to the tokens that don&#39;t marked as <code>skipped</code>. Thus whitespaces, line breaks and comments are ignored by default regarding the language&#39;s lexical specification. Such approach simplifies syntax rule definition as developer takes care about meaningful tokens only.</p>
+<p>An example of syntax rule for parsing Array construction of <a href="http://www.json.org/">JSON language</a>:</p>
+<pre><code class="lang-scala">...
+    <span class="comment">// "array" is a name of rule and target Node kind.</span>
+    <span class="keyword">val</span> jsonArray = rule(<span class="string">"array"</span>) {
+      <span class="comment">// Consists of three sequential parts: "[" token, series of nested</span>
+      <span class="comment">// elements separated with "," token, and losing "]" token.</span>
+      sequence(
+        token(<span class="string">"["</span>), <span class="comment">// Matches "[" token.</span>
+        zeroOrMore( <span class="comment">// Repetition of nested elements</span>
+          <span class="comment">// Result of each element parsed with jsonValue rule should</span>
+          <span class="comment">// be saved to the current constructing node branch multimap</span>
+          <span class="comment">// with tag "value".</span>
+          branch(<span class="string">"value"</span>, jsonValue),
+          separator =
+            <span class="comment">// Matches "," separation token between nested elements.</span>
+            <span class="comment">// If separation token missed produce error message. But</span>
+            <span class="comment">// parsing process continues anyway.</span>
+            recover(token(<span class="string">","</span>), <span class="string">"array entries must be separated with , sign"</span>)
+        ),
+        <span class="comment">// Closed "]" token matcher. If missed produce error message, but the</span>
+        <span class="comment">// whole code construction will be counted as parsed successfully. And</span>
+        <span class="comment">// appropriate AST node will be constructed anyway.</span>
+        recover(token(<span class="string">"]"</span>), <span class="string">"array must end with ] sign"</span>)
+      )
+    }
+...</code></pre>
+<p>Full example can be found here: <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/examples/Json.scala#L124">JSON parser</a>.</p>
+<h3>Operators</h3>
+<p>Likewise the Lexical rules, syntactical rule bodies can be defined by composing of built-in primitive rules. These primitive rules are in fact representing <a href="http://en.wikipedia.org/wiki/Parsing_expression_grammar">PEG</a> operators.</p>
+<h5>Token matcher operators</h5>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>token(x)</code></td>
+<td>Matches token of <em>x</em> kind.</td>
+</tr>
+<tr>
+<td><code>tokensUntil(x)</code></td>
+<td>Matches all tokens starting from the current position until the <em>x</em> token is met. x is included.</td>
+</tr>
+</tbody>
+</table>
+<h5>Composition operators</h5>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>optional(x)</code></td>
+<td>Matchers subrule <em>x</em> zero or one time.</td>
+</tr>
+<tr>
+<td><code>zeroOrMore(x, separator)</code></td>
+<td>Optionally matches subrule <em>x</em> multiple times. Each code pieces matched with subrule <em>x</em> may be divided with another piece of code defined by optional <em>separator</em> parameter.</td>
+</tr>
+<tr>
+<td><code>oneOrMore(x, separator)</code></td>
+<td>Matches subrule <em>x</em> zero or more times. x and separator have the same meaning like in <code>.zeroOrMore</code> method.</td>
+</tr>
+<tr>
+<td><code>repeat(x, y)</code></td>
+<td>Matches <em>x</em> repeated exactly <em>y</em> times.</td>
+</tr>
+<tr>
+<td><code>sequence(x, y, z)</code></td>
+<td>Matches a sequence of rules.</td>
+</tr>
+<tr>
+<td><code>choice(x, y, z)</code></td>
+<td>Ordered choice between rules. Matches next subrule if and only if preceded had been failed.</td>
+</tr>
+</tbody>
+</table>
+<h5>Node construction operators</h5>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>capture(tag, x)</code></td>
+<td>Matches <em>x</em> and writes token matched by x to the node&#39;s <em>reference</em> tagged by <code>tag</code> string.</td>
+</tr>
+<tr>
+<td><code>branch(tag, x)</code></td>
+<td>Forces subrules of <em>x</em> to write their resulting nodes to the current node&#39;s <em>branches</em> multimap. Using <code>key</code> as a multimap&#39;s key.</td>
+</tr>
+</tbody>
+</table>
+<p>Note that if <code>capture</code>, <code>branch</code> or any other rule that includes these rules fail, constructing node&#39;s <em>references</em> and <em>branches</em> multimaps will be reverted respectively to their initial state. Like they were not applied at all.</p>
+<h5>Miscellaneous</h5>
+<table>
+<thead>
+<tr>
+<th>Operator</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name(label, x)</code></td>
+<td>Convenient way to reuse composite syntax rule. May be useful to refer the same rule multimple times instead of duplicating it&#39;s code. In contrast with <code>.rule()</code> and <code>.mainRule()</code> methods, <code>.name()</code> does not define rule constructor. It simply returns nested rule&#39;s result. Note that in contrast with <code>rule</code> and <code>mainRule</code> methods <em>x</em> is defined eagerly. Therefore named rules cannot refer each other cyclically.</td>
+</tr>
+<tr>
+<td><code>recover(x, exception)</code></td>
+<td>Allows subrule <em>x</em> to be possibly recovered with error message <em>exception</em>.</td>
+</tr>
+<tr>
+<td><code>expression(tag, atom)</code></td>
+<td>Defines expression parsing rule constructor. <em>tag</em> is optional parameter to bind top-level node of the expression&#39;s node subtree to the current node&#39;s <code>branches</code> multimap.</td>
+</tr>
+</tbody>
+</table>
+</article><article><h1 id="error-recovering" class="section-header"><div class="decoration-line"></div><span class="caption">Error recovering</span></h1><h3>Error recovery mechanisms</h3>
+<p>Parsers made with Papa Carlo are able to recover syntax errors. There are two techniques:</p>
+<ul>
+<li>Erasing mismatched tokens.</li>
+<li>Skipping missed required tokens.</li>
+</ul>
+<p>First one is designed to avoid parts of the source code that recognized by parser as completely inappropriate in that place. And the second is to parse code parts that contains syntax errors, but still can be recognized as meaningful. For example a block of code <code>if (a == b) {doSmthng();</code> has missed closing brace &quot;}&quot;, but still can be recognized as operator block.</p>
+<p>First way is provided by parser out of the box. If the parser didn&#39;t reach tokens from the code fragment it temporary removes leftmost unreached token(like if it was marked as <code>skipped</code>) and runs over parsing process from the beginning of the code Fragment. Fortunately Papa Carlo&#39;s parser uses <a href="http://en.wikipedia.org/wiki/Memoization">packract momoization</a>. So running parser on the same fragment of code doesn&#39;t lead to performance issues.</p>
+<p>To acuire advantages of the second way developer should manually specify which syntax rules can potentially be skipped in case of fail.</p>
+<h3>Skipping failed syntax rules.</h3>
+<p>Application of syntax rule whether it be a primitive operator or a named rule defined with <code>.rule</code> or <code>.mainRule</code> methods will produce one of the following <em>matching</em> result:</p>
+<ol>
+<li>Matching was successful.</li>
+<li>There were syntax errors during the token matching, but they are not crucial. So called <em>recoverable</em> result.</li>
+<li>Application completely fails. Non-recoverable result.</li>
+</ol>
+<p>The second and the third results produce syntax error messages that can be read then using <code>.getErrors</code> method of the <code>Syntax</code> class. But the first and second results are interpreted by parent rules as successful. For example <code>sequence(x, y, z)</code> is considered as failed if and only if one of it subrules <em>completely fails</em>. In case of any of the nested rules finish with <em>recoverable</em> results and there were no failed subrules, this parent rule will return <em>recoverable</em> result too.</p>
+<p>To mark a rule as potentially skipped and it&#39;s content as recoverable developer needs to wrap this rule to operator <code>.recover(subrule, errorMessage)</code>. This operator will never fail. If nested <code>subrule</code> has failed the whole composition will finishes as <em>recoverable</em> and the <code>recover</code> rule produce syntax error in the current position with error message defined by <code>errorMessage</code> parameter.</p>
+<p>It is recommended to use this technique to recover missing control tokens like semicolons <code>;</code> in the end of the statements, colons <code>,</code> between list&#39;s elements, missing closed tokens like <code>)</code> or <code>}</code> etc.</p>
+<p>Note that it is important not to overuse this recovery mechanism. Especially in cases when missing tokens may completely change the meaning of the code construction and produce grammar ambiguity. For example closing parenthesis <code>)</code> of the <code>if</code> operator&#39;s condition in Java is not crucial to recognize the whole construction:</p>
+<pre><code class="lang-java"><span class="keyword">if</span> (a == b {
+ doSomething();
+}</code></pre>
+<p>But starting brace <code>{</code> of the operator block is vital. Otherwise every single statement operator will be recognized as operator block with missing starting brace.</p>
+</article><article><h1 id="caching" class="section-header"><div class="decoration-line"></div><span class="caption">Caching</span></h1><p>Syntax parsing rules are in fact applied to the source code Fragments, not the whole code. <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/lexis/FragmentController.scala">FragmentController</a> is responsible to determine which Fragment was invalidated when user makes changes to the source code. And it notifies Syntax parser about this Fragment. Syntax parser is looking for the <em>cachable</em> named rule that was applied to this fragment last time and applied it again. If there were no such rule(for example because it was failed last time, or was not marked as <em>cachable</em>) parser chooses enclosing fragment that matches these requirements. Also during the parsing process Syntax parser reuses AST nodes bound to nested fragments that were not affected by the changes of source code, instead of parsing these fragments again.</p>
+<p>There is always exist one top-level Root Fragment that covers the whole source code. And the Main rule defined by <code>.mainRule()</code> method for the top-level AST node. So if no fragments were parsed by FragmentController, Syntax parser will use Root Fragment by default to parse the whole file.</p>
+<p>That is how Papa Carlo&#39;s caching mechanism performed.</p>
+<p>To mark syntax rules that are intended to be potentially cached use <code>cachable()</code> method of the Syntax class. From the example of <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/examples/Json.scala#L158">JSON parser</a>:</p>
+<pre><code class="lang-scala">...
+    cachable(jsonObject, jsonArray)
+...</code></pre>
+<p>Note that appropriate code fragments must also be marked as cachable in the <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/examples/Json.scala#L90">fragment specification</a>:</p>
+<pre><code class="lang-scala">...
+    trackContext(<span class="string">"["</span>, <span class="string">"]"</span>).allowCaching
+    trackContext(<span class="string">"{"</span>, <span class="string">"}"</span>).allowCaching
+...</code></pre>
+</article><article><h1 id="expressions" class="section-header"><div class="decoration-line"></div><span class="caption">Expressions</span></h1><p>Classical Parsing Expression Grammar approach to define expressions with infix/postfix/prefix operators like <code>(1 + 2 * 3) / -4</code> offers to use rules like this:</p>
+<pre><code>Value      &lt;- atomicOperand | &#39;(&#39; Expression &#39;)&#39;
+Product    &lt;- Expression ((&#39;*&#39; | &#39;/&#39;) Expression )*
+Sum        &lt;- Expression ((&#39;+&#39; | &#39;-&#39;) Expression )*
+Expression &lt;- Product | Sum | Value</code></pre>
+<p>In simple case described in the pseudo-code above it looks pretty simple. But for real programming languages with numbers of various operators the grammar could be much more complicated. Appropriate rules should be implemented in accordance with operator precedence and associativity. Moreover usually compiler needs to have Nodes in form of <a href="http://en.wikipedia.org/wiki/Binary_tree">Binary Tree</a>. So additional step to reformat resulting tree to binary form will be required.</p>
+<p>To reduce this complexity Papa Carlo provide&#39;s builder of operator-precedebce parsing rule with easy to use API. And the output node result of this rule form Binary Tree by default.</p>
+<p>From the <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/examples/Calculator.scala">Calculator example</a>:</p>
+<pre><code class="lang-scala">...
+
+    mainRule(<span class="string">"expression"</span>) {
+      <span class="keyword">val</span> rule =
+        expression(branch(<span class="string">"operand"</span>, recover(number, <span class="string">"operand required"</span>)))
+
+      group(rule, <span class="string">"("</span>, <span class="string">")"</span>)
+      postfix(rule, <span class="string">"%"</span>, <span class="number">1</span>)
+      prefix(rule, <span class="string">"+"</span>, <span class="number">2</span>)
+      prefix(rule, <span class="string">"-"</span>, <span class="number">2</span>)
+      infix(rule, <span class="string">"*"</span>, <span class="number">3</span>)
+      infix(rule, <span class="string">"/"</span>, <span class="number">3</span>, rightAssociativity = <span class="keyword">true</span>)
+      infix(rule, <span class="string">"+"</span>, <span class="number">4</span>)
+      infix(rule, <span class="string">"-"</span>, <span class="number">4</span>)
+
+      rule
+    }
+...</code></pre>
+<p>Here the <code>.expression(tag: String, operand: Rule)</code> method defines expression rule parser. <code>tag</code> is optional parameter that is a <code>&quot;result&quot;</code> by default. It&#39;s meaning is the same to <code>tag</code> parameter in <code>.branch()</code> method. <code>operand</code> is atomic operand of the expression. In this example of the math expression parser it is a numeric literal.</p>
+<p>Four functions are used to configure the parser</p>
+<table>
+<thead>
+<tr>
+<th>Operator constructor</th>
+<th align="center">Expression example</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>group(expression, open, close)</td>
+<td align="center"><strong>(</strong> x + y <strong>)</strong> * 2</td>
+<td>Defines grouping operators.</td>
+</tr>
+<tr>
+<td>infix(expression, operator, precedence)</td>
+<td align="center">x <strong>+</strong> y <strong>+</strong> z</td>
+<td>Left associative infix binary operator with specific operator&#39;s precedence.</td>
+</tr>
+<tr>
+<td>infix(expression, operator, precedence, rightAssociativity = true)</td>
+<td align="center">x <strong>=</strong> y <strong>=</strong> z</td>
+<td>Right associative infix binary operator with specific operator&#39;s precedence.</td>
+<td></td>
+</tr>
+<tr>
+<td>prefix(expression, operator, precedence)</td>
+<td align="center">( <strong>-</strong> x) + y</td>
+<td>Prefix unary operator with specific operator&#39;s precedence.</td>
+</tr>
+<tr>
+<td>postfix(expression, operator, precedence)</td>
+<td align="center">x = i <strong>++</strong></td>
+<td>Postfix unary operator with specific operator&#39;s precedence.</td>
+</tr>
+</tbody>
+</table>
+<p>Order of the constructor applications does not make sense. They can be applied in any order. So to define expression grammar of the programming language developer can directly translate operator precedence tables like this: <a href="http://docs.python.org/2/reference/expressions.html#operator-precedence">Python operator precedence table</a>.</p>
+<p>Internally parser uses <a href="http://en.wikipedia.org/wiki/Pratt_parser">Pratt algorithm</a>. So one who are familiar with this parsing technique may implement his/her own extensions.</p>
+<p>From the Postfix operator constructor <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/syntax/Expressions.scala#L45">source code</a>:</p>
+<pre><code class="lang-scala">...
+  <span class="keyword">def</span> postfix(rule: ExpressionRule, operator: String, precedence: Int) {
+    rule.parselet(operator)
+      .leftBindingPower(Int.MaxValue - precedence * <span class="number">10</span>)
+      .leftDenotation {
+        (expression, left, operatorReference) =&gt;
+          <span class="keyword">val</span> node = <span class="keyword">new</span> Node(operator, operatorReference, operatorReference)
+          node.branches += <span class="string">"operand"</span> -&gt; List(left)
+          node
+      }
+  }
+...</code></pre>
+<p>Here is a brief low-level API description:</p>
+<ul>
+<li><code>.parselet()</code> method defines a new &quot;token&quot; in term&#39;s of Pratt&#39;s algorithm for the specific operator.</li>
+<li><code>.leftBindingPower()</code> defines <em>ldp</em> parameter of the <em>token</em>.</li>
+<li><code>.leftDenotation()</code> defines <em>led</em> handler of the <em>token</em>.</li>
+<li><code>.nullDenotation()</code> defines <em>nud</em> handler of the <em>token</em>.</li>
+<li><code>expression.parseRight(rdp)</code> to apply parser in the body of the <em>led</em> or <em>nud</em> handler to the right part of the expression with specific <code>rdp</code> right-binding power.</li>
+<li><code>expression.consume(tokenKind)</code> to force parser read specific token in the current position.</li>
+</ul>
+</article><article><h1 id="manual-ast-manipulation" class="section-header"><div class="decoration-line"></div><span class="caption">Manual AST manipulation</span></h1><p>Despite the fact that Papa Carlo&#39;s parser usually constructs Nodes automatically based on defined rules. It is still possible to interrupt this process in some specific case to apply manual changes to the nodes or even reconfigure the whole tree&#39;s branch.</p>
+<p>To do that developer may call <code>.intercept</code> method of the Syntax class:</p>
+<pre><code class="lang-scala">    <span class="keyword">val</span> objectEntry = rule(<span class="string">"entry"</span>) {
+      sequence(
+        capture(<span class="string">"key"</span>, token(<span class="string">"string"</span>)),
+        token(<span class="string">":"</span>),
+        branch(<span class="string">"value"</span>, jsonValue)
+      )
+    }
+
+    intercep(objectEntry) {
+      entryNode =&gt; entryNode.
+        <span class="keyword">val</span> accessor = <span class="keyword">new</span> NodeAccessor(entryNode)
+
+        <span class="comment">// Changes node's end reference to the begin of the</span>
+        <span class="comment">// parsed code range.</span>
+        accessor.setEnd(entryNode.getBegin)
+
+        entryNode
+    }</code></pre>
+<p>During the parsing process constructing Node&#39;s <code>id</code> property is not assigned yet. That means that Syntax does not track these nodes. And they can be freely mutated using <code>NodeAccessor</code> class. New nodes can also be created manually the same way using <code>NodeAccessor</code> to configure them.</p>
+<p>There are three important things that developer should keep in mind about node manual creation/manipulation:</p>
+<ul>
+<li>It is possible to mutate only the nodes that are not the part of the final AST. Nodes that already bound to the AST become immutable.</li>
+<li>One Node instance must have no more than one parent. In other words developer should not bind the same Node instance as a branch to different supernodes.</li>
+<li>Syntax rules that have explicit interception routine does not support caching.</li>
+</ul>
+</article><article><h1 id="debugging" class="section-header"><div class="decoration-line"></div><span class="caption">Debugging</span></h1><p>There are a number of approaches to debug programming language parsers. And probably there is no the best solution. This artical describes approach that is used by Papa Carlo to test and debug it&#39;s own example parsers. And it could be adopted to third-party parsers made with Papa Carlo.</p>
+<p>In the test <a href="https://github.com/Eliah-Lakhin/papa-carlo/tree/master/src/test/scala/name.lakhin.eliah.projects/papacarlo/test">directory</a> of the Repository you can find two functional <a href="http://www.scalatest.org/">scala-tests</a> of the example parsers. Each Test Spec loads different versions of the <a href="https://github.com/Eliah-Lakhin/papa-carlo/tree/master/src/test/resources/fixtures/calculator/expressions/input">prepared source code files</a>, listens to the logs of the various parser&#39;s components, and comparing them with <a href="https://github.com/Eliah-Lakhin/papa-carlo/tree/master/src/test/resources/fixtures/calculator/expressions/prototype">prototype logs</a>.</p>
+<p><a href="https://github.com/Eliah-Lakhin/papa-carlo/tree/master/src/test/scala/name.lakhin.eliah.projects/papacarlo/test/utils">Utils directory</a> contains a number of so called <em>Monitor</em> classes. Each monitor is responsible for listening logs of specific parser&#39;s components. And the abstract class <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/test/scala/name.lakhin.eliah.projects/papacarlo/test/utils/ParserSpec.scala">ParserSpec</a> is a ready to use prototype of the configurable Test Spec that utilizes these monitors to make resulting output logs and compare them with appropriate prototype logs.</p>
+<p>Example of <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/test/scala/name.lakhin.eliah.projects/papacarlo/test/CalculatorSpec.scala">test spec</a> for Calculator parser:</p>
+<pre><code class="lang-scala"><span class="class"><span class="keyword">class</span> <span class="title">CalculatorSpec</span> <span class="keyword">extends</span> <span class="title">ParserSpec</span><span class="params">(
+  // Name of the directory contains approppriate resource files
+  // and json configuration.
+  parserName = <span class="string">"calculator"</span>,
+
+  // Function-constructor of the lexical parser
+  lexerConstructor = Calculator.lexer _,
+
+  // Function-constructor of the syntax parser
+  syntaxConstructor = Calculator.syntax
+)</span></span></code></pre>
+<p>This test spec reads configuration details from the appropriate <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/test/resources/fixtures/calculator/config.json">json file</a> placed in resource dir:</p>
+<pre><code class="lang-json">{
+    "<span class="attribute">expressions</span>": <span class="value">{
+        "<span class="attribute">steps</span>": <span class="value"><span class="number">3</span></span>,
+        "<span class="attribute">independentSteps</span>": <span class="value"><span class="literal">true</span></span>,
+        "<span class="attribute">monitors</span>": <span class="value">[<span class="string">"node"</span>, <span class="string">"error"</span>, <span class="string">"token"</span>]
+    </span>}</span>,
+    "<span class="attribute">recovery</span>": <span class="value">{
+        "<span class="attribute">steps</span>": <span class="value"><span class="number">2</span></span>,
+        "<span class="attribute">independentSteps</span>": <span class="value"><span class="literal">true</span></span>,
+        "<span class="attribute">monitors</span>": <span class="value">[<span class="string">"node"</span>, <span class="string">"error"</span>, <span class="string">"token"</span>]
+    </span>}
+</span>}</code></pre>
+<p>The configuration lists specific test suites and their options. The name of test suite should match the name of the relative resource directory consists of input and prototype files. In this example input files should be placed to the <a href="https://github.com/Eliah-Lakhin/papa-carlo/tree/master/src/test/resources/fixtures/calculator/expressions/input">src/test/resources/fixtures/calculator/expressions/input</a> directory, and prototypes to the  <a href="https://github.com/Eliah-Lakhin/papa-carlo/tree/master/src/test/resources/fixtures/calculator/expressions/prototype">src/test/resources/fixtures/calculator/expressions/prototype</a> directory.</p>
+<p>This is description of the possible test suite configuration options:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>steps</td>
+<td>Number of input source code versions. Optional parameter. By default - the number of files found in the &quot;input&quot; directory. By convention each input file should be put to the &quot;input&quot; dir, and have name <code>step&lt;n&gt;.txt</code>, where the <em>n</em> - is version number starting from 0.</td>
+</tr>
+<tr>
+<td>monitors</td>
+<td>Array of Monitor string names that should be used for this suite. By default all monitors are turned on.</td>
+</tr>
+<tr>
+<td>shortOutput</td>
+<td>Boolean flag indicates whether the output logs should be simplified or not. Turned off by default.</td>
+</tr>
+<tr>
+<td>outputFrom</td>
+<td>Number of the first input file that should be logged. All preceded input files will be processed by the parser, but their logs ignored. 0 by default.</td>
+</tr>
+<tr>
+<td>independentSteps</td>
+<td>Boolean flag indicates whether the parser should be reset on each input step. Turned off by default. Turning on disables incremental parsing feature.</td>
+</tr>
+</tbody>
+</table>
+<p>The list of provided Monitors:</p>
+<ul>
+<li><a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/test/resources/fixtures/json/simple/prototype/step1/token.txt">&quot;token&quot;</a>: Logs all tokens and their fragment context. Useful to debug Tokenizer and Fragment specification of the parser.</li>
+<li><a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/test/resources/fixtures/json/simple/prototype/step1/fragment.txt">&quot;fragment&quot;</a>: Logs fragments that were created, deleted and invalidated by FragmentController.</li>
+<li><a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/test/resources/fixtures/json/simple/prototype/step1/cache.txt">&quot;cache&quot;</a>: Logs fragment and appropriate node creation/deletion/invalidation events of internal AST caching process.</li>
+<li><a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/test/resources/fixtures/json/simple/prototype/step1/node.txt">&quot;node&quot;</a>: Logs Node&#39;s creation and deletion events of the Syntax parser. And also the AST branch that were updated(so called &quot;merge&quot;) during the parse phase.</li>
+<li><a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/test/resources/fixtures/json/error-recovery/prototype/step5/error.txt">&quot;error&quot;</a>: Logs syntax errors happens during the Syntax parsing step.</li>
+</ul>
+<p>TestSpec puts together Monitor&#39;s output, comparing it with prototype logs got from appropriate resource files, and updates output files in relative &quot;output&quot; resource dir. So developer may manually review log output and/or update appropriate prototype files using these output files.</p>
+</article></div></div></div></body></html>
