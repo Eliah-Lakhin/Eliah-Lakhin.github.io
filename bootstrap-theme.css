@@ -210,6 +210,10 @@ body {
 .main-container article table th {
   padding: 8px;
 }
+.main-container article table td code,
+.main-container article table th code {
+  background: inherit;
+}
 .main-container article table tr {
   border: 1px solid #333333;
 }
@@ -225,6 +229,9 @@ body {
 }
 .main-container article p {
   margin: 20px 10px;
+}
+.main-container article p code {
+  border: 1px solid #eeeeee;
 }
 #personal {
   position: relative;
