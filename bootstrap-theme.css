@@ -127,7 +127,7 @@ body {
   color: #555555;
 }
 .main-container #main-nav .nav.nav-top {
-  margin: 15px 20px;
+  margin: 15px 0 15px 20px;
 }
 .main-container #main-nav .nav {
   margin: 0 0 0 25px;
@@ -140,6 +140,7 @@ body {
 }
 .main-container #main-nav .nav > li > a {
   border: 0;
+  border-radius: 0;
   text-decoration: none;
 }
 .main-container #main-nav .nav > li > a span {
@@ -161,6 +162,7 @@ body {
 .main-container #main-nav .nav > li.active > a:focus {
   color: #f7941d;
   background-color: inherit;
+  border-right: 3px solid #f7941d;
 }
 .main-container #main-nav .nav > li.active > a span,
 .main-container #main-nav .nav > li.active > a:hover span,
@@ -232,6 +234,20 @@ body {
 }
 .main-container article p code {
   border: 1px solid #eeeeee;
+}
+.main-container article ul {
+  list-style: square;
+}
+.main-container article .btn {
+  min-width: 100%;
+  color: #222222;
+  font-weight: bold;
+  text-decoration: none;
+  text-transform: uppercase;
+  border-radius: 0;
+}
+.main-container article .btn img {
+  margin: 0 10px;
 }
 #personal {
   position: relative;
