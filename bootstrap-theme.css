@@ -249,6 +249,23 @@ body {
 .main-container article .btn img {
   margin: 0 10px;
 }
+.main-container #blog article h2,
+.main-container #blog article h3,
+.main-container #blog article h4,
+.main-container #blog article h5,
+.main-container #blog article h6 {
+  text-align: left;
+}
+.main-container #blog article .entry {
+  border-bottom: 1px solid #999999;
+  padding-bottom: 20px;
+  margin: 0 20px 20px 20px;
+}
+.main-container #blog article .entry .date {
+  display: inline-block;
+  padding-top: 25px;
+  text-align: right;
+}
 #personal {
   position: relative;
   left: 1px;
