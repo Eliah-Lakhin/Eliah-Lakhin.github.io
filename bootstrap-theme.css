@@ -300,7 +300,8 @@ body {
 }
 @media (max-width: 992px) {
   .affix,
-  .affix-top {
+  .affix-top,
+  #main-nav {
     display: none;
     position: static;
     margin-bottom: 10px;
