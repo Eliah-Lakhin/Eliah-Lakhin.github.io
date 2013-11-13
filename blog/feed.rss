@@ -2,11 +2,11 @@
 <rss version="2.0">
   <channel>
     <title>Ilya Lakhin's blog</title>
-    <link>http://www.lakhin.com/blog/</link>
+    <link>http://lakhin.com/blog/</link>
     <lastBuildDate>Wed, 27 Nov 2013 17:00:00 GMT</lastBuildDate>
     <description>Ilya Lakhin's web logs.</description>
     <language>en-us</language>
-    <image>http://www.lakhin.com/favicon.ico</image>
+    <image>http://lakhin.com/favicon.ico</image>
     <category domain="http://www.dmoz.org/">compilers</category>
     <category domain="http://www.dmoz.org/">ide</category>
     <category domain="http://www.dmoz.org/">parsing</category>
