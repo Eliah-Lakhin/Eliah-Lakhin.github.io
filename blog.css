@@ -1,0 +1,47 @@
+#blog .entry {
+  padding: 0 20px 0px 20px;
+  margin: 0 20px 10px 20px;
+}
+#blog .entry h4 {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+#blog .entry h4.title {
+  text-align: left;
+}
+#blog .entry h4.title a {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #333333;
+  text-decoration: underline;
+}
+#blog .entry h4.title a:hover {
+  color: #d97a08;
+}
+#blog .entry .date {
+  white-space: nowrap;
+}
+#blog .entry .date h4 {
+  text-align: right;
+}
+#blog .entry .references {
+  padding: 0 10px 10px 10px;
+}
+#blog .entry .references > span {
+  border-bottom: 1px dotted #999999;
+  cursor: pointer;
+}
+#blog .entry .references > span:hover {
+  color: #d97a08;
+  border-bottom: 1px dotted #d97a08;
+}
+#blog .entry .references a {
+  color: #2d672d;
+}
+#blog .entry .references a:hover,
+#blog .entry .references a:focus {
+  color: #163216;
+}
+@media (max-width: 1200px) {
+  #blog .entry h4 {
+    font-size: 15px;
+  }
+}
