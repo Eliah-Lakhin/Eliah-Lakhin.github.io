@@ -45,3 +45,9 @@
     font-size: 15px;
   }
 }
+@media (max-width: 480px) {
+  #blog .entry {
+    margin-left: -10px;
+    margin-right: 0;
+  }
+}
