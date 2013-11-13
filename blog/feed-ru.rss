@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>Ilya Lakhin's blog</title>
+    <link>http://www.lakhin.com/blog/</link>
+    <lastBuildDate>Wed, 27 Nov 2013 17:00:00 GMT</lastBuildDate>
+    <description>Ilya Lakhin's web logs.</description>
+    <image>http://www.lakhin.com/favicon.ico</image>
+    <category domain="http://www.dmoz.org/">compilers</category>
+    <category domain="http://www.dmoz.org/">ide</category>
+    <category domain="http://www.dmoz.org/">parsing</category>
+    <category domain="http://www.dmoz.org/">parsers</category>
+    <category domain="http://www.dmoz.org/">code editors</category>
+    <category domain="http://www.dmoz.org/">programming languages</category>
+    <item>
+      <title>Remote job - is not a freelance</title>
+      <guid isPermaLink="true">http://www.lakhin.com/blog/26.10.2013-remote-job-is-not-a-freelance/</guid>
+      <link>http://habrahabr.ru/post/199114/</link>
+      <pubDate>Mon, 25 Nov 2013 17:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Functional programming in Java</title>
+      <guid isPermaLink="true">http://www.lakhin.com/blog/28.06.2011-functional-programming-in-java/</guid>
+      <link>http://habrahabr.ru/post/122919/</link>
+      <pubDate>Wed, 27 Jul 2011 17:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>
