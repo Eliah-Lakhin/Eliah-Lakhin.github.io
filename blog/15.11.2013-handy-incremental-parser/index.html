@@ -25,7 +25,7 @@ indexed immediately, without any significant time delays.</li>
 </ul>
 <p>Another problem is that PL compilers and appropriate IDE plugins are usually
 developed separately for each code editor.</p>
-<p>The solution for this problem might be designing compiler&#39;s front-end to work
+<p>The solution for these problems might be designing compiler&#39;s front-end to work
 as a compilation server in incremental fashion:</p>
 <ul>
 <li>It should be able to provide code editor through it&#39;s API with metadata on
@@ -69,7 +69,7 @@ under the APL2 license.</p>
 <p>The library provides the following features:</p>
 <ul>
 <li>Parser&#39;s grammar defined right in the Scala code using library&#39;s API. No
-generation explicit generation steps.</li>
+explicit generation steps.</li>
 <li>The API represents Parsing Expression Grammar operators. PEG is probably the
 most popular and easy to understand PL grammar for a nowadays.</li>
 <li>Resulting parser builds and incrementally updates Abstract Syntax Tree out of
@@ -128,9 +128,9 @@ Carlo in one short
   }.syntax
 }</code></pre>
 <p>The parser will be able to parse precedence expressions like this
-<code>1 - -2 / 3 * +(4 / 5) + 6 + 7% + 8</code>, build and update AST, and recovery syntax
+<code>1 - -2 / 3 * +(4 / 5) + 6 + 7% + 8</code>, build and update AST, and recover syntax
 errors.</p>
-<p>The more interesting example is
+<p>But the more interesting example is
 <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/examples/Json.scala">JSON parser</a>,
 that incrementally parses large input files with over 600 lines of source code.
 In one of the included tests these files has been changed and parsed several
