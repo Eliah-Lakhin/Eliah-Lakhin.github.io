@@ -3,7 +3,7 @@
   <channel>
     <title>Ilya Lakhin's blog</title>
     <link>http://lakhin.com/blog/</link>
-    <lastBuildDate>Wed, 27 Nov 2013 17:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Thu, 14 Nov 2013 17:00:00 GMT</lastBuildDate>
     <description>Ilya Lakhin's web logs.</description>
     <language>en-us</language>
     <image>http://lakhin.com/favicon.ico</image>
@@ -13,5 +13,14 @@
     <category domain="http://www.dmoz.org/">parsers</category>
     <category domain="http://www.dmoz.org/">code editors</category>
     <category domain="http://www.dmoz.org/">programming languages</category>
+    <item>
+      <title>Handy incremental parser</title>
+      <guid isPermaLink="true">http://lakhin.com/blog/15.11.2013-handy-incremental-parser/</guid>
+      <description>Introduction of Papa Carlo - constructor of incremental parsers written in Scala.</description>
+      <link>/projects/papa-carlo/</link>
+      <link>https://github.com/Eliah-Lakhin/papa-carlo</link>
+      <link>http://habrahabr.ru/post/201774/</link>
+      <pubDate>Thu, 14 Nov 2013 17:00:00 GMT</pubDate>
+    </item>
   </channel>
 </rss>

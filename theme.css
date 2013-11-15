@@ -1,7 +1,7 @@
 @import url(http://fonts.googleapis.com/css?family=Dancing+Script:700);
 @import url(http://fonts.googleapis.com/css?family=Maven+Pro);
 body {
-  background: url('/asset/file000624709884.jpg') no-repeat center center fixed;
+  background: url('/images/file000624709884.jpg') no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -45,7 +45,7 @@ body {
   }
 }
 .navbar-custom .navbar-brand {
-  background-image: url('/asset/logo-min.png');
+  background-image: url('/images/logo-min.png');
   background-position: 18px;
   background-repeat: no-repeat;
   padding-left: 75px;
@@ -183,6 +183,10 @@ body {
   margin-bottom: 100px;
   padding: 0 10%;
 }
+.main-container article img {
+  display: block;
+  margin: auto;
+}
 .main-container article h1.section-header {
   display: block;
   text-align: center;
@@ -217,6 +221,9 @@ body {
   width: 100%;
   color: #eeeeee;
   margin: 20px 0;
+}
+.main-container article table a {
+  color: #91cf91;
 }
 .main-container article table td,
 .main-container article table th {

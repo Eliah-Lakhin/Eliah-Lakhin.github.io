@@ -22,22 +22,35 @@
 #blog .entry .date h4 {
   text-align: right;
 }
-#blog .entry .references {
+.post h2,
+.post h3,
+.post h4,
+.post h5,
+.post h6 {
+  margin-top: 50px;
+}
+.post .references,
+#blog .references {
   padding: 0 10px 10px 10px;
 }
-#blog .entry .references > span {
+.post .references > span,
+#blog .references > span {
   border-bottom: 1px dotted #999999;
   cursor: pointer;
 }
-#blog .entry .references > span:hover {
+.post .references > span:hover,
+#blog .references > span:hover {
   color: #d97a08;
   border-bottom: 1px dotted #d97a08;
 }
-#blog .entry .references a {
+.post .references a,
+#blog .references a {
   color: #2d672d;
 }
-#blog .entry .references a:hover,
-#blog .entry .references a:focus {
+.post .references a:hover,
+#blog .references a:hover,
+.post .references a:focus,
+#blog .references a:focus {
   color: #163216;
 }
 @media (max-width: 1200px) {
