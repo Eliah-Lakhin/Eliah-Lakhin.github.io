@@ -11,15 +11,14 @@ ga('send', 'pageview');</script></head><body><div id="fb-root"></div><script>(fu
   js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</script><header role="navigation" class="navbar navbar-default navbar-custom navbar-static-top navbar-inverse"><div class="container"><div class="navbar-header"><button type="button" data-toggle="collapse" data-target="#main-menu-body" class="navbar-toggle"><span class="sr-only">menu.toggle</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="/blog/" class="navbar-brand">My web logs</a></div><div id="main-menu-body" class="collapse navbar-collapse"><ul class="nav navbar-nav navbar-right"><li><div class="triangle"></div><a href="/" rel="author">Home</a></li><li class="active"><div class="triangle"></div><a href="/blog/">Blog</a></li><li><div class="triangle"></div><a href="/projects/">Projects</a></li><li><div class="triangle"></div><a href="https://github.com/Eliah-Lakhin/">GitHub</a></li></ul></div></div></header><div class="container main-container"><div class="row post"><div class="col-md-offset-1 col-md-10 light-theme"><article><h1 id="handy-incremental-parser" class="section-header"><div class="decoration-line"></div><span class="caption">Handy incremental parser</span></h1><h3>Problem</h3>
-<p>Most of the PL compilers usually process the whole set of source codes at once.
-And optimized for fast performance. Even though compilation time in this
-approach is proportional to the overall source code size. And in practice
-compilation time may grow to seconds and even minutes as the code base is
-growing.</p>
-<p>This approach is not suitable in writing language support plugins for code
-editors and IDEs by two reasons:</p>
+<p>Most of the programming language compilers usually process source code files at
+once. Compilation time using this approach is proportional to the overall source
+code size in best case. In practice the time may grow to seconds and even
+minutes as the code base is growing.</p>
+<p>This approach is not suitable for writing language support plugins for code
+editors and IDEs for two reasons:</p>
 <ul>
-<li>The editor must always be in touch with source code&#39;s syntax and semantic.</li>
+<li>The editor must always be in touch with source code&#39;s syntax and semantics.</li>
 <li>Small and frequent changes end user makes to the source code should be
 indexed immediately, without any significant time delays.</li>
 </ul>
@@ -28,15 +27,15 @@ developed separately for each code editor.</p>
 <p>The solution for these problems might be designing compiler&#39;s front-end to work
 as a compilation server in incremental fashion:</p>
 <ul>
-<li>It should be able to provide code editor through it&#39;s API with metadata on
-source code&#39;s syntax structure, semantic references and possible actual
-errors in the code. So the external editor can utilise this metadata to
-provide end user with a set of conventional IDE tools such as code
-refactoring, jump-to-definition, variable renaming, syntax and error
-highlighting.</li>
+<li>It should provide external code editors with API to obtain metadata on its
+internal compilation state. Such as source code&#39;s syntax structure, semantic
+references and possible actual errors in the code. So the editor can utilise
+this information to provide end user with a set of conventional IDE tools
+such as code refactoring, jump-to-definition, variable renaming, syntax and
+error highlighting.</li>
 <li>The compilation server should work continuously by caching all the metadata
-including AST and semantic references. And being able to reuse this caching
-state to resume compilation process when source code is changing. Therefore
+including AST and semantic references. So this information can be reused to
+resume compilation process when source code is changed. Therefore
 compilation performance will be relative not to the overall codebase size,
 but the size of the changes end user makes to the code.</li>
 </ul>
@@ -48,15 +47,16 @@ development of PL plugins for code editors and IDEs, and unification of their
 support.</p>
 <p>The heart of the compiler&#39;s front-end is a source code parser. And the parser of
 incremental compiler should work in incremental fashion as well.</p>
-<p>And this is an issue. There are a lot of tools to build ordinary parsers based
-on predefined programming language grammar. Including generators such as
+<p>And here is an issue. There are a lot of tools to build ordinary parsers based
+on predefined programming language grammar. These include generators such as
 <a href="http://www.quut.com/c/ANSI-C-grammar-y.html">YACC</a> and
 <a href="http://www.antlr.org/">ANTLR</a> or combinators such as
 <a href="http://www.haskell.org/haskellwiki/Parsec">Parsec</a> or
 <a href="https://github.com/sirthias/parboiled/wiki">Parboiled</a>. But too few of them
 provide a way to build incremental parsers. Incremental parsing feature
-support is usually have experimental status in these projects. And hard to be
-used by the almost developers.</p>
+support usually has experimental status in these projects. They are interesting
+from research and academic point of view, but usually are not ready for use in
+real products.</p>
 <p>The goal of my project is eliminating the lack of such instruments, by providing
 easy to use library for constructing incremental parsers with a number of
 handy features that compiler and PL support plugin developers usually need.</p>
@@ -71,13 +71,14 @@ under the APL2 license.</p>
 <li>Parser&#39;s grammar defined right in the Scala code using library&#39;s API. No
 explicit generation steps.</li>
 <li>The API represents Parsing Expression Grammar operators. PEG is probably the
-most popular and easy to understand PL grammar for a nowadays.</li>
+most popular and easy to understand PL grammar nowadays.</li>
 <li>Resulting parser builds and incrementally updates Abstract Syntax Tree out of
 the box. And there is no intermediate Parsing Tree build step.</li>
-<li>Efficient error recovery. Result parser can build or update AST even from
+<li>Efficient error recovery. Resulting parser can build or update AST even from
 the source code that contains syntax errors.</li>
-<li>Expression grammar with infix operators can be defined with special prepared
-operators based on Pratt algorithm.</li>
+<li>Expression grammar with unary and binary precedence operators can be easily
+defined based on Pratt algorithm using dedicated functions like <code>infix()</code>
+or <code>group()</code>.</li>
 </ul>
 <p>The simple example of a full-feature expression parser can be defined with Papa
 Carlo in one short
@@ -94,7 +95,7 @@ Carlo in one short
     tokenCategory(<span class="string">"number"</span>, choice(chunk(<span class="string">"0"</span>), sequence(rangeOf(<span class="string">'1'</span>, <span class="string">'9'</span>),
       zeroOrMore(rangeOf(<span class="string">'0'</span>, <span class="string">'9'</span>)))))
 
-    terminals(<span class="string">"("</span>, <span class="string">")"</span>, <span class="string">"%"</span>, <span class="string">"+"</span>, <span class="string">"-"</span>, <span class="string">"*"</span>, <span class="string">"/"</span>)
+    terminals(<span class="string">"("</span>, <span class="string">")"</span>, <span class="string">"!"</span>, <span class="string">"+"</span>, <span class="string">"-"</span>, <span class="string">"*"</span>, <span class="string">"/"</span>)
 
     tokenizer
   }
@@ -113,7 +114,7 @@ Carlo in one short
         expression(branch(<span class="string">"operand"</span>, recover(number, <span class="string">"operand required"</span>)))
 
       group(rule, <span class="string">"("</span>, <span class="string">")"</span>)
-      postfix(rule, <span class="string">"%"</span>, <span class="number">1</span>)
+      postfix(rule, <span class="string">"!"</span>, <span class="number">1</span>)
       prefix(rule, <span class="string">"+"</span>, <span class="number">2</span>)
       prefix(rule, <span class="string">"-"</span>, <span class="number">2</span>)
       infix(rule, <span class="string">"*"</span>, <span class="number">3</span>)
@@ -128,12 +129,12 @@ Carlo in one short
   }.syntax
 }</code></pre>
 <p>The parser will be able to parse precedence expressions like this
-<code>1 - -2 / 3 * +(4 / 5) + 6 + 7% + 8</code>, build and update AST, and recover syntax
+<code>1 - -2 / 3 * +(4 / 5) + 6 + 7! + 8</code>, build and update AST, and recover syntax
 errors.</p>
-<p>But the more interesting example is
+<p>More interesting example is
 <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/examples/Json.scala">JSON parser</a>,
 that incrementally parses large input files with over 600 lines of source code.
-In one of the included tests these files has been changed and parsed several
+In one of the included tests these files have been changed and parsed several
 times:</p>
 <table>
 <thead>
@@ -170,8 +171,8 @@ times:</p>
 </tbody>
 </table>
 <p>This is where incremental parsing approach advantages take place.</p>
-<p>Also Papa Carlo includes API to log and debug various aspects of developing
-parser. This technique was used to cover the parser with a number of functional
+<p>Also Papa Carlo includes API to log and debug various aspects while developing a
+parser. This technique was used to cover the library with a number of functional
 tests.</p>
 <hr><div class="references"><span data-toggle="collapse" data-target="#details">External references</span><div id="details" class="details collapse"><ul><li><a href="/projects/papa-carlo/" target="_blank">Papa Carlo documentation website</a></li><li><a href="https://github.com/Eliah-Lakhin/papa-carlo" target="_blank">Papa Carlo source code on GitHub</a></li><li><a href="http://habrahabr.ru/post/201774/" target="_blank">Crosspost on Habrahabr in Russian</a></li></ul></div></div></article></div></div><br><div class="row"><div class="col-md-offset-1 col-md-10 light-theme"><br><article><p><div id="disqus_thread"></div><script type="text/javascript">/* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
 var disqus_shortname = 'lakhin';
