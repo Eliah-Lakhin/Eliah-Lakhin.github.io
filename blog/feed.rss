@@ -14,9 +14,18 @@
     <category domain="http://www.dmoz.org/">code editors</category>
     <category domain="http://www.dmoz.org/">programming languages</category>
     <item>
-      <title>Handy incremental parser</title>
+      <title>The Future of Web IDEs</title>
+      <guid isPermaLink="true">http://lakhin.com/blog/02.05.2014-the-future-of-web-ides/</guid>
+      <description>Demo webapp of the incremental parser. Thoughts on Web IDEs for programming languages with static typing.</description>
+      <link>http://lakhin.com/projects/papa-carlo/demo/</link>
+      <link>https://github.com/Eliah-Lakhin/papa-carlo</link>
+      <link>http://habrahabr.ru/post/221213/</link>
+      <pubDate>Thu, 01 May 2014 17:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Handy Incremental Parser</title>
       <guid isPermaLink="true">http://lakhin.com/blog/15.11.2013-handy-incremental-parser/</guid>
-      <description>Introduction of Papa Carlo - constructor of incremental parsers written in Scala.</description>
+      <description>Introduction to Papa Carlo - constructor of incremental parsers written in Scala.</description>
       <link>/projects/papa-carlo/</link>
       <link>https://github.com/Eliah-Lakhin/papa-carlo</link>
       <link>http://www.reddit.com/r/programming/comments/1rfyzx/whats_wrong_with_the_most_programming_language/</link>
