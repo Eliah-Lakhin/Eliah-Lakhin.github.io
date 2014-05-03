@@ -12,7 +12,7 @@ ga('send', 'pageview');</script></head><body><div id="fb-root"></div><script>(fu
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</script><header role="navigation" class="navbar navbar-default navbar-custom navbar-static-top navbar-inverse"><div class="container"><div class="navbar-header"><button type="button" data-toggle="collapse" data-target="#main-menu-body" class="navbar-toggle"><span class="sr-only">menu.toggle</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="/blog/" class="navbar-brand">My web logs</a></div><div id="main-menu-body" class="collapse navbar-collapse"><ul class="nav navbar-nav navbar-right"><li><div class="triangle"></div><a href="/" rel="author">Home</a></li><li class="active"><div class="triangle"></div><a href="/blog/">Blog</a></li><li><div class="triangle"></div><a href="/projects/">Works</a></li><li><div class="triangle"></div><a href="https://github.com/Eliah-Lakhin/">GitHub</a></li></ul></div></div></header><div class="container main-container"><div class="row post"><div class="col-md-offset-1 col-md-10 light-theme"><article><h1 id="the-future-of-web-ides" class="section-header"><div class="decoration-line"></div><span class="caption">The Future of Web IDEs</span></h1><p><a href="/projects/papa-carlo/demo/"><img src="http://i.imgur.com/XGSswoh.png?1" alt="Click to open Demo web application"></a></p>
 <p>In this post I would like to explain why having incremental compiler is
-important for browser based IDEs and text editors.</p>
+important for the browser based IDEs and text editors.</p>
 <p>To understand what incremental compiler is, please take a look at the
 <a href="/projects/papa-carlo/demo/">Demo web application</a> I have published a few days
 ago.</p>
@@ -21,10 +21,10 @@ ago.</p>
 technologies is growing fast. Probably, you have heared about such products as
 Cloud9, Koding or even Atom.io from GitHub released recently. Tens if not
 hundreds of new instances entering the stage.</p>
-<p>These solutions are especially useful, because they provide user with ready to
-use remote development environment, and there are no special steps in
+<p>These solutions are especially useful, because they provide user with the ready
+to use remote development environment, and there are no special steps in
 deployment. User just opening web-browser and voila, he/she has a ready to use
-workstation. At first glance it seems like a good solution for web developers
+workstation. At first glance, it seems like a good solution for web developers
 who are working with dynamic typing languages such as JavaScript, Ruby, PHP,
 Python, etc.</p>
 <p>However, we must admit they don&#39;t shine so much when we are talking about
@@ -33,58 +33,58 @@ comparing web editors with the major well known solutions for desktops such as
 Visual Studio, IntelliJ Idea or Eclipse. The key difference of the desktop based 
 &quot;old-school&quot; editors is the ability of deep syntax and semantic understanding of
 the programming languages. Finally, they provide end users with a number of
-handy and smart code manipulation instruments including Code Completion, Jump To
-Definition, Refactoring/Renaming. Having these features is very important when
-we are working with the large codebase.</p>
+handy and smart code manipulation instruments, including Code Completion,
+Jump To Definition, Refactoring/Renaming. Having these features is very
+important when we are working with the large codebase.</p>
 <p>Internally, these editors accomplish their abilities by continuous indexing
 source codes of the entire project files. They perform indexing using so called
 <a href="http://en.wikipedia.org/wiki/Incremental_compiler#Definition">&quot;incremental parsers/compilers&quot;</a>.
-Incremental parsers are responsible for continuous scanning the code for method,
-functions and variable definitions, and their application sites in the project
-file&#39;s.</p>
-<p>An incremental parsers is differ from the ordinary parser by a number of
+Incremental parsers are responsible for continuous scanning the code for
+methods, functions and variable definitions, and their application sites in the
+project file&#39;s.</p>
+<p>An incremental parser is differ from the ordinary parser by a number of
 properties:</p>
 <ol>
-<li><p><strong>Continuous indexing the code in real time</strong>. Ordinary compiler scans entire
-source code once, and then it stops. If the end user changes something in
+<li><p><strong>Continuous indexing the code in real time</strong>. An ordinary compiler scans
+entire source code once, and then it stops. If the end user changes something in
 the code, the compiler should be run over and over. This approach is
-inappropriate for IDEs, since complete compilation of the project may take
+inappropriate for IDEs, since complete compilation of the project may takes
 seconds if not minutes.</p>
 </li>
 <li><p><strong>Syntax error tolerance</strong>. When the developer writing a code, the program is
 frequently stands in the syntactic incorrect states. However, IDE must be able
 to recognize the rest of the code. For example, to be able to provide the user
-with the code completion feature in any place of the code.</p>
+with a Code-Completion feature in any place of the code.</p>
 </li>
 <li><p><strong>Mapping between the structure of the Parse Tree and the code</strong>. All of the
-nodes of the Parse Tree should keep track of the code segments they were
-produced of. This property provides the Jump-To-Definition feature.</p>
+nodes in the Parse Tree should keep track of the code segments they were
+produced of. This property provides with a Jump-To-Definition feature.</p>
 </li>
 </ol>
-<p>Unfortunately, there is a lack of development tools for incremental compilers
-nowadays. Ordinary tools such as parser generators don&#39;t fit well. So,
+<p>Unfortunately, there is a lack of development tools for the incremental
+compilers nowadays. Ordinary tools such as parser generators don&#39;t fit well. So,
 developers usually have to implement these core parsers for the IDEs more or
 less manually.</p>
 <p>That&#39;s why I have developed my own parsing library -
 <a href="/projects/papa-carlo/">Papa Carlo</a> - designed especially for development of the
-incremental compilers. API of the library should be familiar for the developers
-who have worked with ordinary parser combinators and generators. But the
-resulting parser has all of the features mentioned above out of the box.</p>
+incremental compilers. The API of the library should be familiar for
+developers who have worked with the ordinary parser combinators and generators.
+But the resulting parser has all of the features mentioned above out of the box.</p>
 <p>The Demo example I referred in the beginning of the post is written on top of
 the Papa Carlo library. It doesn&#39;t use server-side to process computations,
-the parser works completely in the web browser. I believe this approach may
+the parser works completely in the web browser. I believe, this approach may
 be scaled up to develop language support plugins for the modern Web Editors to
 turn them to the full-featured IDEs comparable to the class of the desktop based
 IDEs.</p>
 <h3 id="a-few-words-about-the-demo">A few words about the Demo</h3>
 <p>The library Papa Carlo is written in Scala and compiled to JavaScript using
-ScalaJS compiler. So all of the computations performing completely on the
+the ScalaJS compiler. So all of the computations performing completely on the
 client-side. The server hosted only the static content: JS and HTML sources.</p>
 <p>The parser is running in the WebWorker (if possible). Since that, application
 loading is distributed between two threads: one of them is responsible for UI
 management, and another one performce compilation.</p>
-<p>All of the visual features are done with SVG using d3.js library. Code editor
-on the left side of the screen is Code Mirror widget.</p>
+<p>All of the visual features are done with SVG using the d3.js library. The code
+editor on the left side of the screen is a Code Mirror widget.</p>
 <hr>
 <p>If you like this project and the Demo, please, give it a star on GitHub:
 <a href="https://github.com/Eliah-Lakhin/papa-carlo">papa-carlo@Eliah-Lakgin</a>.</p>
