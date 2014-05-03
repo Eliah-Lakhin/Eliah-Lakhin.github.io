@@ -43,8 +43,7 @@ source codes of the entire project files. They perform indexing using so called
 Incremental parsers are responsible for continuous scanning the code for
 methods, functions and variable definitions, and their application sites in the
 project file&#39;s.</p>
-<p>An incremental parser is differ from the ordinary parser by a number of
-properties:</p>
+<p>An incremental parser is differ from ordinary parser by a number of properties:</p>
 <ol>
 <li><p><strong>Continuous indexing the code in real time</strong>. An ordinary compiler scans
 entire source code once, and then it stops. If the end user changes something in
@@ -67,16 +66,15 @@ compilers nowadays. Ordinary tools such as parser generators don&#39;t fit well.
 developers usually have to implement these core parsers for the IDEs more or
 less manually.</p>
 <p>That&#39;s why I have developed my own parsing library -
-<a href="/projects/papa-carlo/">Papa Carlo</a> - designed especially for development of the
+<a href="/projects/papa-carlo/">Papa Carlo</a> - designed especially for development of
 incremental compilers. The API of the library should be familiar for
-developers who have worked with the ordinary parser combinators and generators.
+developers who have worked with ordinary parser combinators and generators.
 But the resulting parser has all of the features mentioned above out of the box.</p>
-<p>The Demo example I referred in the beginning of the post is written on top of
+<p>The Demo example I referred to in the beginning of the post is written on top of
 the Papa Carlo library. It doesn&#39;t use server-side to process computations,
-the parser works completely in the web browser. I believe, this approach may
+the parser works completely in the web browser. I believe this approach may
 be scaled up to develop language support plugins for the modern Web Editors to
-turn them to the full-featured IDEs comparable to the class of the desktop based
-IDEs.</p>
+turn them into full-featured IDEs comparable to the desktop based IDEs.</p>
 <h3 id="a-few-words-about-the-demo">A few words about the Demo</h3>
 <p>The library Papa Carlo is written in Scala and compiled to JavaScript using
 the ScalaJS compiler. So all of the computations performing completely on the
