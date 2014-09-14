@@ -14,6 +14,13 @@
     <category domain="http://www.dmoz.org/">code editors</category>
     <category domain="http://www.dmoz.org/">programming languages</category>
     <item>
+      <title>Papa Carlo on Scala Days 2014</title>
+      <guid isPermaLink="true">http://lakhin.com/blog/18.06.2014-papa-carlo-on-scala-days-2014/</guid>
+      <description>Papa Carlo was demonstrated on Scala Days 2014 as an example of application built with Scala.JS by the author of Scala.JS Sébastien Doeraene</description>
+      <link>http://www.parleys.com/play/53a7d2cbe4b0543940d9e555/chapter35/agenda</link>
+      <pubDate>Tue, 17 Jun 2014 17:00:00 GMT</pubDate>
+    </item>
+    <item>
       <title>The Future of Web IDEs</title>
       <guid isPermaLink="true">http://lakhin.com/blog/02.05.2014-the-future-of-web-ides/</guid>
       <description>Demo webapp of the incremental parser. Thoughts on Web IDEs for programming languages with static typing.</description>
