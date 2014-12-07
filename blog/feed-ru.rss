@@ -13,6 +13,13 @@
     <category domain="http://www.dmoz.org/">code editors</category>
     <category domain="http://www.dmoz.org/">programming languages</category>
     <item>
+      <title>My Speech at Software Freedom Day 2014</title>
+      <guid isPermaLink="true">http://lakhin.com/blog/21.09.2014-my-speech-at-software-freedom-day-2014/</guid>
+      <link>http://www.youtube.com/watch?v=RfAhRqmalFE</link>
+      <link>http://slides.com/lakhin/sfd-2014-ru/</link>
+      <pubDate>Sat, 20 Sep 2014 17:00:00 GMT</pubDate>
+    </item>
+    <item>
       <title>Papa Carlo on Scala Days 2014</title>
       <guid isPermaLink="true">http://lakhin.com/blog/18.06.2014-papa-carlo-on-scala-days-2014/</guid>
       <description>Papa Carlo was demonstrated on Scala Days 2014 as an example of application built with Scala.JS by the author of Scala.JS Sébastien Doeraene</description>
