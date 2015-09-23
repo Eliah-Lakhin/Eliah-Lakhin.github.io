@@ -3,7 +3,7 @@
   <channel>
     <title>Ilya Lakhin's blog</title>
     <link>http://lakhin.com/blog/</link>
-    <lastBuildDate>Fri, 15 Nov 2013 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Thu, 14 Nov 2013 18:00:00 GMT</lastBuildDate>
     <description>Ilya Lakhin's web logs.</description>
     <language>en-us</language>
     <image>http://lakhin.com/favicon.ico</image>
@@ -18,7 +18,7 @@
       <guid isPermaLink="true">http://lakhin.com/blog/18.06.2014-papa-carlo-on-scala-days-2014/</guid>
       <description>Papa Carlo was demonstrated on Scala Days 2014 as an example of application built with Scala.JS by the author of Scala.JS Sébastien Doeraene</description>
       <link>http://www.parleys.com/play/53a7d2cbe4b0543940d9e555/chapter35/agenda</link>
-      <pubDate>Wed, 18 Jun 2014 00:00:00 GMT</pubDate>
+      <pubDate>Tue, 17 Jun 2014 18:00:00 GMT</pubDate>
     </item>
     <item>
       <title>The Future of Web IDEs</title>
@@ -27,7 +27,7 @@
       <link>http://lakhin.com/projects/papa-carlo/demo/</link>
       <link>https://github.com/Eliah-Lakhin/papa-carlo</link>
       <link>http://habrahabr.ru/post/221213/</link>
-      <pubDate>Fri, 02 May 2014 00:00:00 GMT</pubDate>
+      <pubDate>Thu, 01 May 2014 18:00:00 GMT</pubDate>
     </item>
     <item>
       <title>Handy Incremental Parser</title>
@@ -38,7 +38,7 @@
       <link>http://www.reddit.com/r/programming/comments/1rfyzx/whats_wrong_with_the_most_programming_language/</link>
       <link>http://lambda-the-ultimate.org/node/4840</link>
       <link>http://habrahabr.ru/post/201774/</link>
-      <pubDate>Fri, 15 Nov 2013 00:00:00 GMT</pubDate>
+      <pubDate>Thu, 14 Nov 2013 18:00:00 GMT</pubDate>
     </item>
   </channel>
 </rss>
