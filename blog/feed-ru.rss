@@ -3,7 +3,7 @@
   <channel>
     <title>Ilya Lakhin's blog</title>
     <link>http://lakhin.com/blog/</link>
-    <lastBuildDate>Thu, 14 Nov 2013 18:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Thu, 14 Nov 2013 17:00:00 GMT</lastBuildDate>
     <description>Ilya Lakhin's web logs.</description>
     <image>http://lakhin.com/favicon.ico</image>
     <category domain="http://www.dmoz.org/">compilers</category>
@@ -18,28 +18,28 @@
       <link>http://www.youtube.com/watch?v=88LQXTVBktk</link>
       <link>http://slides.com/lakhin/elm/</link>
       <link>http://elm-lang.org/</link>
-      <pubDate>Sat, 25 Jul 2015 18:00:00 GMT</pubDate>
+      <pubDate>Sat, 25 Jul 2015 17:00:00 GMT</pubDate>
     </item>
     <item>
       <title>Lambda Nsk Speach</title>
       <guid isPermaLink="true">http://lakhin.com/blog/19.05.2015-lambda-nsk-speach/</guid>
       <link>https://youtu.be/nkYiLchpnys?t=2m55s</link>
       <link>http://slides.com/lakhin/promote-fp/</link>
-      <pubDate>Mon, 18 May 2015 18:00:00 GMT</pubDate>
+      <pubDate>Mon, 18 May 2015 17:00:00 GMT</pubDate>
     </item>
     <item>
       <title>My Speech at Software Freedom Day 2014</title>
       <guid isPermaLink="true">http://lakhin.com/blog/21.09.2014-my-speech-at-software-freedom-day-2014/</guid>
       <link>http://www.youtube.com/watch?v=RfAhRqmalFE</link>
       <link>http://slides.com/lakhin/sfd-2014-ru/</link>
-      <pubDate>Sat, 20 Sep 2014 18:00:00 GMT</pubDate>
+      <pubDate>Sat, 20 Sep 2014 17:00:00 GMT</pubDate>
     </item>
     <item>
       <title>Papa Carlo on Scala Days 2014</title>
       <guid isPermaLink="true">http://lakhin.com/blog/18.06.2014-papa-carlo-on-scala-days-2014/</guid>
       <description>Papa Carlo was demonstrated on Scala Days 2014 as an example of application built with Scala.JS by the author of Scala.JS Sébastien Doeraene</description>
       <link>http://www.parleys.com/play/53a7d2cbe4b0543940d9e555/chapter35/agenda</link>
-      <pubDate>Tue, 17 Jun 2014 18:00:00 GMT</pubDate>
+      <pubDate>Tue, 17 Jun 2014 17:00:00 GMT</pubDate>
     </item>
     <item>
       <title>The Future of Web IDEs</title>
@@ -48,7 +48,7 @@
       <link>http://lakhin.com/projects/papa-carlo/demo/</link>
       <link>https://github.com/Eliah-Lakhin/papa-carlo</link>
       <link>http://habrahabr.ru/post/221213/</link>
-      <pubDate>Thu, 01 May 2014 18:00:00 GMT</pubDate>
+      <pubDate>Thu, 01 May 2014 17:00:00 GMT</pubDate>
     </item>
     <item>
       <title>Handy Incremental Parser</title>
@@ -59,19 +59,19 @@
       <link>http://www.reddit.com/r/programming/comments/1rfyzx/whats_wrong_with_the_most_programming_language/</link>
       <link>http://lambda-the-ultimate.org/node/4840</link>
       <link>http://habrahabr.ru/post/201774/</link>
-      <pubDate>Thu, 14 Nov 2013 18:00:00 GMT</pubDate>
+      <pubDate>Thu, 14 Nov 2013 17:00:00 GMT</pubDate>
     </item>
     <item>
       <title>Remote job - is not a freelance</title>
       <guid isPermaLink="true">http://lakhin.com/blog/26.10.2013-remote-job-is-not-a-freelance/</guid>
       <link>http://habrahabr.ru/post/199114/</link>
-      <pubDate>Fri, 25 Oct 2013 18:00:00 GMT</pubDate>
+      <pubDate>Fri, 25 Oct 2013 17:00:00 GMT</pubDate>
     </item>
     <item>
       <title>Functional programming in Java</title>
       <guid isPermaLink="true">http://lakhin.com/blog/28.06.2011-functional-programming-in-java/</guid>
       <link>http://habrahabr.ru/post/122919/</link>
-      <pubDate>Mon, 27 Jun 2011 18:00:00 GMT</pubDate>
+      <pubDate>Mon, 27 Jun 2011 17:00:00 GMT</pubDate>
     </item>
   </channel>
 </rss>
