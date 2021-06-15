@@ -136,39 +136,39 @@ lexer.input(<span class="string">""</span><span class="string">" {"</span>x<span
 <thead>
 <tr>
 <th>Kind</th>
-<th style="text-align:left">Value</th>
-<th style="text-align:center">Skip</th>
+<th align="left">Value</th>
+<th align="center">Skip</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Open brace</td>
-<td style="text-align:left"><code>{</code></td>
-<td style="text-align:center"></td>
+<td align="left"><code>{</code></td>
+<td align="center"></td>
 </tr>
 <tr>
 <td>String</td>
-<td style="text-align:left"><code>&quot;x&quot;</code></td>
-<td style="text-align:center"></td>
+<td align="left"><code>&quot;x&quot;</code></td>
+<td align="center"></td>
 </tr>
 <tr>
 <td>Colon</td>
-<td style="text-align:left"><code>:</code></td>
-<td style="text-align:center"></td>
+<td align="left"><code>:</code></td>
+<td align="center"></td>
 </tr>
 <tr>
 <td>Whitespace</td>
-<td style="text-align:left"><code> </code></td>
-<td style="text-align:center">+</td>
+<td align="left"><code> </code></td>
+<td align="center">+</td>
 </tr>
 <tr>
 <td>Number</td>
-<td style="text-align:left"><code>1234</code></td>
-<td style="text-align:center"></td>
+<td align="left"><code>1234</code></td>
+<td align="center"></td>
 </tr>
 <tr>
 <td>Close brace</td>
-<td style="text-align:left"><code>}</code></td>
+<td align="left"><code>}</code></td>
 </tr>
 </tbody>
 </table>
@@ -205,74 +205,74 @@ lexer.input(<span class="string">""</span><span class="string">" {"</span>x<span
 <thead>
 <tr>
 <th>Papa Carlo Matcher</th>
-<th style="text-align:center">Similar Regexp</th>
+<th align="center">Similar Regexp</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>zeroOrMore(x)</td>
-<td style="text-align:center">x*</td>
+<td align="center">x*</td>
 <td>Repetition of x.</td>
 </tr>
 <tr>
 <td>oneOrMore(x)</td>
-<td style="text-align:center">x+</td>
+<td align="center">x+</td>
 <td>Repetition of x at least one time.</td>
 </tr>
 <tr>
 <td>optional(x)</td>
-<td style="text-align:center">x?</td>
+<td align="center">x?</td>
 <td>Repetition of x one time max.</td>
 </tr>
 <tr>
 <td>repeat(x, y)</td>
-<td style="text-align:center">x{y, y}</td>
+<td align="center">x{y, y}</td>
 <td>Repetition of x exactly y times.</td>
 </tr>
 <tr>
 <td>anyOf(&quot;xyz&quot;)</td>
-<td style="text-align:center">[xyz]</td>
+<td align="center">[xyz]</td>
 <td>Any character from the given string.</td>
 </tr>
 <tr>
 <td>anyExceptOf(&quot;xyz&quot;)</td>
-<td style="text-align:center">[^xyz]</td>
+<td align="center">[^xyz]</td>
 <td>Any character but one from the given string.</td>
 </tr>
 <tr>
 <td>any()</td>
-<td style="text-align:center">.</td>
+<td align="center">.</td>
 <td>Any character</td>
 </tr>
 <tr>
 <td>rangeOf(x, y)</td>
-<td style="text-align:center">[x-y]</td>
+<td align="center">[x-y]</td>
 <td>Any character between characters x and y.</td>
 </tr>
 <tr>
 <td>chunk(&quot;foobar&quot;)</td>
-<td style="text-align:center">foobar</td>
+<td align="center">foobar</td>
 <td>Match given string.</td>
 </tr>
 <tr>
 <td>test(x)</td>
-<td style="text-align:center"></td>
+<td align="center"></td>
 <td>Predicate. Checks whether the matcher x applied here, but doesn&#39;t perform actual application.</td>
 </tr>
 <tr>
 <td>testNot(x)</td>
-<td style="text-align:center"></td>
+<td align="center"></td>
 <td>Predicate. Checks whether the matcher x <strong>is not</strong> applied here.</td>
 </tr>
 <tr>
 <td>sequence(x, y, z)</td>
-<td style="text-align:center">x y z</td>
+<td align="center">x y z</td>
 <td>Sequence of rules</td>
 </tr>
 <tr>
 <td>choice(x, y, z)</td>
-<td style="text-align:center">x&#124;y&#124;z</td>
+<td align="center">x&#124;y&#124;z</td>
 <td>Ordered choice between rules. In contrast with Regular expressions further rules can be applied if and only if preceded have been failed.</td>
 </tr>
 </tbody>
@@ -353,7 +353,7 @@ damaged line
 <li><strong>references</strong>: Multimap of selected tokens from the source code of the node. Sometimes it may be useful to select specific tokens from the source in order to simplify the further process of AST semantic analysis. This multimap is forming similarly to the <em>branches</em> multimap. And the tokens can be read with <code>getValue(tag: String)</code> method. Result of this method is string of all tagged token values joined together.</li>
 </ul>
 <p>Syntax parser is responsible for creating, removing and building the whole AST. And usually developer doesn&#39;t need to care about manual operations with nodes. However Papa Carlo provides a way to override default node construction behaviour. This technique will be described in the next chapter.</p>
-</article><article><h1 id="syntax-definition-api" class="section-header"><div class="decoration-line"></div><span class="caption">Syntax definition API</span></h1><h3 id="api">API</h3>
+</article><article><h1 id="syntax-definition-api" class="section-header"><div class="decoration-line"></div><span class="caption">Syntax definition API</span></h1><h3>API</h3>
 <p>To define actual syntax parser developer needs to decompose programming language syntax by named rules. Each rule parses specific code construction. And responsible for building appropriate AST Node for this code construction. These rules form programming language grammar of <a href="http://en.wikipedia.org/wiki/Parsing_expression_grammar">Parsing Expression Grammar</a> class.</p>
 <p>Rules are defined using methods of instance of the <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/Syntax.scala">Syntax</a> class: <code>.rule(ruleName: String)(ruleBody: =&gt; Rule)</code>. These rules build nodes of the same <em>kind</em> as the <em>ruleName</em>. Rule that represents top-level node of AST hierarchy should be defined with <code>mainRule</code> method instead.</p>
 <p>The reference returned from the rule definition method can be used to refer to this rule in other rules. Hence the rules can refer to each other forming a graph of rules. Note that rule bodies defined in lazy fashion. So it is safe to define circular references between them. In <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/examples/Json.scala">Json</a> example <em>jsonObject</em> refers to <em>objectEntry</em>, <em>objectEntry</em> refers to <em>jsonValue</em>. And the <em>jsonValue</em> refers to <em>jsonObject</em> again.</p>
@@ -385,9 +385,9 @@ damaged line
     }
 ...</code></pre>
 <p>Full example can be found here: <a href="https://github.com/Eliah-Lakhin/papa-carlo/blob/master/src/main/scala/name.lakhin.eliah.projects/papacarlo/examples/Json.scala#L124">JSON parser</a>.</p>
-<h3 id="operators">Operators</h3>
+<h3>Operators</h3>
 <p>Likewise the Lexical rules, syntactical rule bodies can be defined by composing of built-in primitive rules. These primitive rules are in fact representing <a href="http://en.wikipedia.org/wiki/Parsing_expression_grammar">PEG</a> operators.</p>
-<h5 id="token-matcher-operators">Token matcher operators</h5>
+<h5>Token matcher operators</h5>
 <table>
 <thead>
 <tr>
@@ -406,7 +406,7 @@ damaged line
 </tr>
 </tbody>
 </table>
-<h5 id="composition-operators">Composition operators</h5>
+<h5>Composition operators</h5>
 <table>
 <thead>
 <tr>
@@ -441,7 +441,7 @@ damaged line
 </tr>
 </tbody>
 </table>
-<h5 id="node-construction-operators">Node construction operators</h5>
+<h5>Node construction operators</h5>
 <table>
 <thead>
 <tr>
@@ -461,7 +461,7 @@ damaged line
 </tbody>
 </table>
 <p>Note that if <code>capture</code>, <code>branch</code> or any other rule that includes these rules fail, constructing node&#39;s <em>references</em> and <em>branches</em> multimaps will be reverted respectively to their initial state. Like they wouldn&#39;t have had applied at all.</p>
-<h5 id="miscellaneous">Miscellaneous</h5>
+<h5>Miscellaneous</h5>
 <table>
 <thead>
 <tr>
@@ -484,7 +484,7 @@ damaged line
 </tr>
 </tbody>
 </table>
-</article><article><h1 id="error-recovering" class="section-header"><div class="decoration-line"></div><span class="caption">Error recovering</span></h1><h3 id="error-recovery-mechanisms">Error recovery mechanisms</h3>
+</article><article><h1 id="error-recovering" class="section-header"><div class="decoration-line"></div><span class="caption">Error recovering</span></h1><h3>Error recovery mechanisms</h3>
 <p>Parsers made with Papa Carlo are able to recover syntax errors. There are two techniques:</p>
 <ul>
 <li>Erasing mismatched tokens.</li>
@@ -493,7 +493,7 @@ damaged line
 <p>First one is designed to avoid parts of the source code that recognized by parser as completely inappropriate in that place. And the second is to parse code parts that contains syntax errors, but still can be recognized as meaningful. For example a block of code <code>if (a == b) {doSmthng();</code> has missed closing brace &quot;}&quot;, but still can be recognized as operator block.</p>
 <p>First way is provided by parser out of the box. If the parser didn&#39;t reach tokens from the code fragment it temporary removes leftmost unreached token(like if it was marked as <code>skipped</code>) and runs over parsing process from the beginning of the code Fragment. Fortunately Papa Carlo&#39;s parser uses <a href="http://en.wikipedia.org/wiki/Memoization">packract memoization</a>. So running parser on the same fragment of code doesn&#39;t lead to performance issues.</p>
 <p>To acquire advantages of the second way developer should manually specify which syntax rules can potentially be skipped in case of fail.</p>
-<h3 id="skipping-failed-syntax-rules">Skipping failed syntax rules</h3>
+<h3>Skipping failed syntax rules</h3>
 <p>Application of syntax rule whether it be a primitive operator or a named rule defined with <code>.rule</code> or <code>.mainRule</code> methods will produce one of the following <em>matching</em> result:</p>
 <ol>
 <li>Matching was successful.</li>
@@ -552,35 +552,35 @@ Expression &lt;- Product | Sum | Value</code></pre>
 <thead>
 <tr>
 <th>Operator constructor</th>
-<th style="text-align:center">Expression example</th>
+<th align="center">Expression example</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>group(expression, open, close)</td>
-<td style="text-align:center"><strong>(</strong> x + y <strong>)</strong> * 2</td>
+<td align="center"><strong>(</strong> x + y <strong>)</strong> * 2</td>
 <td>Defines grouping operators.</td>
 </tr>
 <tr>
 <td>infix(expression, operator, precedence)</td>
-<td style="text-align:center">x <strong>+</strong> y <strong>+</strong> z</td>
+<td align="center">x <strong>+</strong> y <strong>+</strong> z</td>
 <td>Left associative infix binary operator with specific operator&#39;s precedence.</td>
 </tr>
 <tr>
 <td>infix(expression, operator, precedence, rightAssociativity = true)</td>
-<td style="text-align:center">x <strong>=</strong> y <strong>=</strong> z</td>
+<td align="center">x <strong>=</strong> y <strong>=</strong> z</td>
 <td>Right associative infix binary operator with specific operator&#39;s precedence.</td>
 <td></td>
 </tr>
 <tr>
 <td>prefix(expression, operator, precedence)</td>
-<td style="text-align:center">( <strong>-</strong> x) + y</td>
+<td align="center">( <strong>-</strong> x) + y</td>
 <td>Prefix unary operator with specific operator&#39;s precedence.</td>
 </tr>
 <tr>
 <td>postfix(expression, operator, precedence)</td>
-<td style="text-align:center">x = i <strong>++</strong></td>
+<td align="center">x = i <strong>++</strong></td>
 <td>Postfix unary operator with specific operator&#39;s precedence.</td>
 </tr>
 </tbody>
